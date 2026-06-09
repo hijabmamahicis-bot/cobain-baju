@@ -23,7 +23,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .nav-logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);line-height:1}
 .nav-logo span{color:var(--rose);font-style:italic}
 .nav-tag{font-size:.58rem;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
-.nav-right{display:flex;align-items:center;gap:14px}
 .nav-admin{font-size:.72rem;font-weight:600;color:var(--ink2);border:1.5px solid var(--border);border-radius:6px;padding:5px 11px;text-decoration:none;transition:all .2s}
 .nav-admin:hover{border-color:var(--ink);color:var(--ink)}
 .hero{background:var(--white);border-bottom:1px solid var(--border);padding:40px 28px 34px;text-align:center}
@@ -87,7 +86,8 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .upload-hint{font-size:.7rem;color:var(--ink3)}
 .photo-prev{display:none;align-items:center;gap:12px;background:var(--snow);border:1px solid var(--border);border-radius:var(--rsm);padding:12px}
 .photo-prev.show{display:flex}
-.prev-thumb{width:56px;height:70px;border-radius:6px;border:1px solid var(--border);object-fit:cover;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.prev-thumb{width:56px;height:70px;border-radius:6px;border:1px solid var(--border);flex-shrink:0;overflow:hidden}
+.prev-thumb img{width:100%;height:100%;object-fit:cover}
 .prev-meta{flex:1}
 .prev-name{font-size:.8rem;font-weight:600;color:var(--ink)}
 .prev-size{font-size:.67rem;color:var(--ink3);margin-top:2px}
@@ -133,7 +133,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .gen-btn:hover:not(:disabled){background:var(--rose-h);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,80,74,.28)}
 .gen-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;transform:none}
 .gen-note{text-align:center;font-size:.68rem;color:var(--ink3);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:4px}
-.err-msg{display:none;background:#fdf0f0;border:1px solid #e8c0c0;border-radius:var(--rsm);padding:12px 14px;font-size:.82rem;color:var(--rose);margin-top:10px}
+.err-msg{display:none;background:#fdf0f0;border:1px solid #e8c0c0;border-radius:var(--rsm);padding:12px 14px;font-size:.82rem;color:var(--rose);margin-top:10px;line-height:1.5}
 .err-msg.show{display:block}
 .result-sec{display:none;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-align:center;margin-top:18px}
 .result-sec.show{display:block}
@@ -149,12 +149,13 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .btn-again{padding:10px 20px;background:var(--white);color:var(--ink);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:border-color .2s}
 .btn-again:hover{border-color:var(--ink)}
 .res-priv{font-size:.65rem;color:var(--ink3);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:3px}
-.loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(4px)}
+.loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(4px)}
 .loading.show{display:flex}
 .spinner{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--rose);border-radius:50%;animation:spin .85s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-txt{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink)}
-.loading-sub{font-size:.75rem;color:var(--ink2);text-align:center;max-width:240px}
+.loading-sub{font-size:.75rem;color:var(--ink2);text-align:center;max-width:260px;line-height:1.6}
+.loading-steps{margin-top:4px;font-size:.7rem;color:var(--ink3);text-align:center}
 footer{background:var(--ink);color:rgba(255,255,255,.3);text-align:center;padding:20px;font-size:.68rem;letter-spacing:.04em}
 footer span{color:rgba(255,255,255,.55)}
 @media(max-width:600px){
@@ -187,6 +188,8 @@ footer span{color:rgba(255,255,255,.55)}
 </div>
 
 <div class="main">
+
+  <!-- STEP 1 -->
   <div class="sb" id="sb1">
     <div class="sb-head">
       <div class="sb-num" id="sn1">1</div>
@@ -202,20 +205,19 @@ footer span{color:rgba(255,255,255,.55)}
         <input class="search-input" id="searchInput" type="text" placeholder="Cari nama produk atau kategori…" oninput="handleSearch(this)"/>
         <button class="search-clr" id="searchClr" onclick="clearSearch()">✕</button>
       </div>
-      <div class="pills" id="pillsWrap">
-        <div class="pill active" onclick="filterPill(this,'semua')">Semua</div>
-      </div>
+      <div class="pills" id="pillsWrap"><div class="pill active" onclick="filterPill(this,'semua')">Semua</div></div>
       <div class="prod-cnt" id="prodCnt">Memuat produk...</div>
       <div class="prod-grid" id="prodGrid"><div style="text-align:center;padding:20px;color:var(--ink3)">⏳ Memuat koleksi...</div></div>
     </div>
   </div>
 
+  <!-- STEP 2 -->
   <div class="sb" id="sb2">
     <div class="sb-head">
       <div class="sb-num" id="sn2">2</div>
       <div class="sb-info">
         <div class="sb-name">Upload Foto Kamu</div>
-        <div class="sb-desc">Full body atau setengah badan · JPG/PNG · Maks 5MB</div>
+        <div class="sb-desc">Full body, berdiri tegak · JPG/PNG · Maks 5MB</div>
       </div>
     </div>
     <div class="sb-div"></div>
@@ -224,10 +226,10 @@ footer span{color:rgba(255,255,255,.55)}
         <input type="file" id="fotoInput" accept="image/jpeg,image/png,image/webp"/>
         <div class="upload-ico">🧍‍♀️</div>
         <div class="upload-lbl">Klik atau seret foto di sini</div>
-        <div class="upload-hint">JPG · PNG · Maks 5MB · Foto tidak dikirim ke server</div>
+        <div class="upload-hint">Tips: foto full body, berdiri tegak, latar polos → hasil lebih akurat</div>
       </div>
       <div class="photo-prev" id="photoPrev">
-        <div class="prev-thumb"><img id="prevImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px"/></div>
+        <div class="prev-thumb"><img id="prevImg" src="" alt=""/></div>
         <div class="prev-meta">
           <div class="prev-name" id="prevName">—</div>
           <div class="prev-size" id="prevSize">—</div>
@@ -238,6 +240,7 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
+  <!-- STEP 3 -->
   <div class="sb" id="sb3">
     <div class="sb-head">
       <div class="sb-num" id="sn3">3</div>
@@ -255,6 +258,7 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
+  <!-- STEP 4 -->
   <div class="sb" id="sb4">
     <div class="sb-head">
       <div class="sb-num" id="sn4">4</div>
@@ -265,29 +269,20 @@ footer span{color:rgba(255,255,255,.55)}
       <div class="sb-badge-lock" id="step4lockBadge" style="display:none">Tidak diperlukan</div>
     </div>
     <div class="sb-div"></div>
-    <div class="sb-body" id="step4body">
+    <div class="sb-body">
       <div id="bawahanNormal">
         <div class="bawahan-grid" id="bawahanGrid"><div style="text-align:center;padding:16px;color:var(--ink3)">⏳ Memuat...</div></div>
       </div>
       <div id="bawahanLockedGamis" style="display:none">
-        <div class="bawahan-locked">
-          <div class="lk-ico">👗</div>
-          <div class="lk-title">Gamis tidak memerlukan bawahan</div>
-          <div class="lk-desc">Gamis sudah merupakan pakaian lengkap dari atas hingga bawah</div>
-          <div class="lk-badge gamis">✨ Langsung pilih suasana di bawah ya!</div>
-        </div>
+        <div class="bawahan-locked"><div class="lk-ico">👗</div><div class="lk-title">Gamis tidak memerlukan bawahan</div><div class="lk-desc">Gamis sudah merupakan pakaian lengkap</div><div class="lk-badge gamis">✨ Langsung pilih suasana!</div></div>
       </div>
       <div id="bawahanLockedOneset" style="display:none">
-        <div class="bawahan-locked">
-          <div class="lk-ico">👘</div>
-          <div class="lk-title">Produk ini sudah satu setelan lengkap</div>
-          <div class="lk-desc">Atasan dan bawahan sudah termasuk dalam satu produk</div>
-          <div class="lk-badge oneset">✨ Langsung pilih suasana di bawah ya!</div>
-        </div>
+        <div class="bawahan-locked"><div class="lk-ico">👘</div><div class="lk-title">Produk ini sudah satu setelan lengkap</div><div class="lk-desc">Atasan dan bawahan sudah termasuk dalam satu produk</div><div class="lk-badge oneset">✨ Langsung pilih suasana!</div></div>
       </div>
     </div>
   </div>
 
+  <!-- STEP 5 -->
   <div class="sb" id="sb5">
     <div class="sb-head">
       <div class="sb-num" id="sn5">5</div>
@@ -302,7 +297,8 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
-  <div class="val-strip" id="valStrip">
+  <!-- VALIDATION -->
+  <div class="val-strip">
     <div class="vr" id="v1"><div class="vdot" id="vd1"></div>Pilih atasan</div>
     <div class="vr" id="v2"><div class="vdot" id="vd2"></div>Upload foto</div>
     <div class="vr" id="v3"><div class="vdot" id="vd3"></div>Tinggi badan</div>
@@ -314,8 +310,9 @@ footer span{color:rgba(255,255,255,.55)}
   <div class="gen-note">🔒 Foto diproses langsung oleh AI · Tidak disimpan di manapun</div>
   <div class="err-msg" id="errMsg"></div>
 
+  <!-- RESULT -->
   <div class="result-sec" id="resultSec">
-    <div class="res-badge">✅ Hasil Generate</div>
+    <div class="res-badge">✅ Hasil Virtual Try-On</div>
     <div class="res-title">Ini tampilan kamu, say! 🎉</div>
     <div class="res-sub" id="resSub">—</div>
     <img class="res-img" id="resImg" src="" alt="Hasil Virtual Try-On"/>
@@ -327,7 +324,8 @@ footer span{color:rgba(255,255,255,.55)}
 <div class="loading" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-txt">Mamah lagi siapin tampilanmu… 🌸</div>
-  <div class="loading-sub">AI sedang memproses, mohon tunggu sekitar 30-60 detik ya</div>
+  <div class="loading-sub" id="loadingSub">Menyiapkan foto produk...</div>
+  <div class="loading-steps" id="loadingSteps"></div>
 </div>
 
 <footer>
@@ -350,7 +348,6 @@ const firebaseConfig = {
 const OPENAI_KEY_STORAGE = 'hmi_oai_key';
 const NO_BAWAHAN = ['Gamis', 'One Set'];
 
-// ── STATE ──
 const state = {
   atasan: null, atasanKat: null,
   photoDataUrl: null, photoFile: null,
@@ -360,42 +357,149 @@ const state = {
 
 let allAtasan = [], allBawahan = [], allSuasana = [];
 
-// ── GENERATE ──
-// PERUBAHAN UTAMA: dall-e-3 diganti gpt-image-1
-// - model: 'gpt-image-1'
-// - size: '1024x1536' (portrait, gpt-image-1 tidak support 1024x1792)
-// - quality: 'medium' (gpt-image-1 pakai low/medium/high, bukan standard/hd)
-// - response: b64_json (bukan URL), perlu konversi ke data URL
+// ─────────────────────────────────────────────
+// HELPER: konversi URL gambar eksternal → base64
+// Menggunakan canvas untuk bypass CORS
+// ─────────────────────────────────────────────
+async function urlToBase64(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      try {
+        // Ambil base64 tanpa prefix "data:image/png;base64,"
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        resolve(dataUrl);
+      } catch(e) {
+        reject(new Error('Gagal konversi gambar: ' + e.message));
+      }
+    };
+    img.onerror = () => reject(new Error('Gagal load gambar produk dari URL: ' + url));
+    img.src = url;
+  });
+}
+
+// ─────────────────────────────────────────────
+// HELPER: data URL → Blob (untuk FormData)
+// ─────────────────────────────────────────────
+function dataUrlToBlob(dataUrl) {
+  const [header, data] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(data);
+  const arr = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
+// ─────────────────────────────────────────────
+// HELPER: resize gambar agar tidak terlalu besar
+// Max 1024px di sisi terpanjang, hemat token API
+// ─────────────────────────────────────────────
+async function resizeImage(dataUrl, maxSize = 1024) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if (w <= maxSize && h <= maxSize) { resolve(dataUrl); return; }
+      const ratio = Math.min(maxSize / w, maxSize / h);
+      w = Math.round(w * ratio); h = Math.round(h * ratio);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.src = dataUrl;
+  });
+}
+
+// ─────────────────────────────────────────────
+// GENERATE — pakai /v1/images/edits
+// Kirim: foto customer + foto atasan + foto bawahan
+// ─────────────────────────────────────────────
 window.doGenerate = async () => {
   let apiKey = localStorage.getItem(OPENAI_KEY_STORAGE) || '';
   if (!apiKey || !apiKey.startsWith('sk-')) {
     apiKey = prompt('Masukkan OpenAI API Key kamu:\n(dimulai dengan sk-...)');
-    if (!apiKey || !apiKey.startsWith('sk-')) {
-      showErr('API Key tidak valid. Harus dimulai dengan sk-');
-      return;
-    }
+    if (!apiKey || !apiKey.startsWith('sk-')) { showErr('API Key tidak valid. Harus dimulai dengan sk-'); return; }
     localStorage.setItem(OPENAI_KEY_STORAGE, apiKey);
   }
 
-  hideErr();
-  showLoading(true);
+  hideErr(); showLoading(true);
+  setLoadingSub('Menyiapkan foto customer...');
 
   try {
-    const prompt = buildPrompt();
+    const a = state.atasan;
+    const b = state.bawahan;
+    const s = state.suasana;
+    const h = state.height;
 
-    const res = await fetch('https://api.openai.com/v1/images/generations', {
+    // ── STEP 1: Resize foto customer ──
+    setLoadingSub('Memproses foto kamu...');
+    const customerResized = await resizeImage(state.photoDataUrl, 1024);
+
+    // ── STEP 2: Load foto produk atasan → base64 ──
+    setLoadingSub('Memuat foto produk atasan...');
+    let atasanDataUrl = null;
+    if (a.foto_url) {
+      try {
+        atasanDataUrl = await urlToBase64(a.foto_url);
+        atasanDataUrl = await resizeImage(atasanDataUrl, 768);
+      } catch(e) {
+        console.warn('Gagal load foto atasan, lanjut tanpa gambar:', e.message);
+      }
+    }
+
+    // ── STEP 3: Load foto produk bawahan → base64 ──
+    let bawahanDataUrl = null;
+    if (b && b.foto_url) {
+      setLoadingSub('Memuat foto produk bawahan...');
+      try {
+        bawahanDataUrl = await urlToBase64(b.foto_url);
+        bawahanDataUrl = await resizeImage(bawahanDataUrl, 768);
+      } catch(e) {
+        console.warn('Gagal load foto bawahan, lanjut tanpa gambar:', e.message);
+      }
+    }
+
+    // ── STEP 4: Bangun prompt ──
+    const prompt = buildEditPrompt(a, b, s, h);
+
+    // ── STEP 5: Bangun FormData untuk /v1/images/edits ──
+    setLoadingSub('Mengirim ke AI... (~30-60 detik)');
+    const formData = new FormData();
+    formData.append('model', 'gpt-image-1');
+    formData.append('prompt', prompt);
+    formData.append('size', '1024x1536');
+    formData.append('quality', 'medium');
+    formData.append('n', '1');
+
+    // Gambar pertama = foto customer (wajib ada)
+    const customerBlob = dataUrlToBlob(customerResized);
+    formData.append('image[]', customerBlob, 'customer.jpg');
+
+    // Gambar kedua = foto atasan (jika berhasil diload)
+    if (atasanDataUrl) {
+      const atasanBlob = dataUrlToBlob(atasanDataUrl);
+      formData.append('image[]', atasanBlob, 'atasan.jpg');
+    }
+
+    // Gambar ketiga = foto bawahan (jika ada & berhasil diload)
+    if (bawahanDataUrl) {
+      const bawahanBlob = dataUrlToBlob(bawahanDataUrl);
+      formData.append('image[]', bawahanBlob, 'bawahan.jpg');
+    }
+
+    // ── STEP 6: Kirim ke OpenAI ──
+    const res = await fetch('https://api.openai.com/v1/images/edits', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-image-1',
-        prompt: prompt,
-        n: 1,
-        size: '1024x1536',
-        quality: 'medium'
-      })
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+      // PENTING: jangan set Content-Type manual, biarkan browser set boundary otomatis
+      body: formData
     });
 
     const data = await res.json();
@@ -403,12 +507,13 @@ window.doGenerate = async () => {
     if (!res.ok) {
       if (res.status === 401) {
         localStorage.removeItem(OPENAI_KEY_STORAGE);
-        throw new Error('API Key tidak valid atau sudah expired. Silakan masukkan key yang baru.');
+        throw new Error('API Key tidak valid atau expired. Silakan masukkan key baru.');
       }
-      throw new Error(data?.error?.message || 'Gagal generate gambar. Coba beberapa saat lagi.');
+      throw new Error(data?.error?.message || 'Gagal generate gambar.');
     }
 
-    // gpt-image-1 mengembalikan base64, bukan URL
+    // ── STEP 7: Tampilkan hasil ──
+    // gpt-image-1 edits mengembalikan b64_json
     const b64 = data.data[0].b64_json;
     const imgDataUrl = `data:image/png;base64,${b64}`;
     state.resultUrl = imgDataUrl;
@@ -416,9 +521,6 @@ window.doGenerate = async () => {
     const resImg = document.getElementById('resImg');
     resImg.src = imgDataUrl;
     resImg.onload = () => {
-      const a = state.atasan;
-      const b = state.bawahan;
-      const s = state.suasana;
       let sub = `${a.nama}`;
       if (b) sub += ` + ${b.nama}`;
       sub += ` · Suasana: ${s.nama}`;
@@ -449,7 +551,43 @@ window.doGenerate = async () => {
   }
 };
 
-// ── LOAD DATA ──
+// ─────────────────────────────────────────────
+// BUILD PROMPT untuk image edit
+// Berbeda dengan generation — prompt ini instruksi editing
+// ─────────────────────────────────────────────
+function buildEditPrompt(a, b, s, h) {
+  let outfitInstruction = '';
+
+  if (a.kategori === 'Gamis') {
+    outfitInstruction = `Pakaikan gamis dari gambar referensi atasan kepada orang dalam foto pertama. Gamis: ${a.deskripsi_ai}. Panjang gamis ${a.panjang_baju}cm, menutupi seluruh tubuh hingga mendekati mata kaki.`;
+  } else if (a.kategori === 'One Set') {
+    outfitInstruction = `Pakaikan setelan one set dari gambar referensi atasan kepada orang dalam foto pertama. Setelan: ${a.deskripsi_ai}. Panjang total sekitar ${a.panjang_baju}cm.`;
+  } else {
+    outfitInstruction = `Pakaikan atasan dari gambar referensi kedua kepada orang dalam foto pertama. Atasan: ${a.deskripsi_ai}, panjang ${a.panjang_baju}cm.`;
+    if (b) {
+      outfitInstruction += ` Pakaikan juga bawahan dari gambar referensi ketiga. Bawahan: ${b.deskripsi_ai}, panjang ${b.panjang_baju}cm.`;
+    }
+  }
+
+  return `You are a fashion virtual try-on AI. Task: dress the person in the first image with the clothing shown in the reference images.
+
+${outfitInstruction}
+
+Person details: Indonesian Muslim woman, approximately ${h}cm tall, wearing hijab.
+
+Important instructions:
+- Keep the person's face, body shape, skin tone, and hijab EXACTLY as in the original photo
+- The clothing must visually match the reference product images as closely as possible — same color, pattern, and style
+- Replace ONLY the clothing, preserve everything else about the person
+- Background setting: ${s.deskripsi_ai}
+- The result must look like a natural, realistic fashion photo
+- Full body visible from head to toe
+- Professional fashion photography lighting and composition`;
+}
+
+// ─────────────────────────────────────────────
+// FIREBASE & DATA LOADING
+// ─────────────────────────────────────────────
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -463,33 +601,26 @@ async function loadData() {
     snapA.forEach(d => { const d2 = d.data(); if (d2.aktif !== false) allAtasan.push({ id: d.id, ...d2 }); });
     snapB.forEach(d => { const d2 = d.data(); if (d2.aktif !== false) allBawahan.push({ id: d.id, ...d2 }); });
     snapS.forEach(d => { const d2 = d.data(); if (d2.aktif !== false) allSuasana.push({ id: d.id, ...d2 }); });
-    renderAtasan(allAtasan);
-    renderBawahan(allBawahan);
-    renderSuasana(allSuasana);
-    buildPills();
+    renderAtasan(allAtasan); renderBawahan(allBawahan); renderSuasana(allSuasana); buildPills();
   } catch(e) {
-    document.getElementById('prodGrid').innerHTML = `<div style="color:var(--rose);font-size:.8rem;padding:12px">Gagal memuat produk. Coba refresh halaman.</div>`;
+    document.getElementById('prodGrid').innerHTML = `<div style="color:var(--rose);font-size:.8rem;padding:12px">Gagal memuat produk. Coba refresh.</div>`;
   }
 }
 
 function buildPills() {
   const cats = [...new Set(allAtasan.map(a => a.kategori))].filter(Boolean);
-  const wrap = document.getElementById('pillsWrap');
-  wrap.innerHTML = `<div class="pill active" onclick="filterPill(this,'semua')">Semua</div>` +
+  document.getElementById('pillsWrap').innerHTML =
+    `<div class="pill active" onclick="filterPill(this,'semua')">Semua</div>` +
     cats.map(c => `<div class="pill" onclick="filterPill(this,'${c}')">${c}</div>`).join('');
 }
 
 function catClass(kat) {
-  const m = { Kemeja:'kemeja', Tunik:'tunik', Gamis:'gamis', Blouse:'blouse', 'Outer / Blazer':'outer', 'One Set':'oneset' };
-  return m[kat] || 'kemeja';
+  return { Kemeja:'kemeja', Tunik:'tunik', Gamis:'gamis', Blouse:'blouse', 'Outer / Blazer':'outer', 'One Set':'oneset' }[kat] || 'kemeja';
 }
 
 function renderAtasan(list) {
   document.getElementById('prodCnt').textContent = list.length + ' produk tersedia';
-  if (!list.length) {
-    document.getElementById('prodGrid').innerHTML = `<div style="text-align:center;padding:24px;color:var(--ink3)">Belum ada produk. Silakan tambah di halaman admin.</div>`;
-    return;
-  }
+  if (!list.length) { document.getElementById('prodGrid').innerHTML = `<div style="text-align:center;padding:24px;color:var(--ink3)">Belum ada produk.</div>`; return; }
   document.getElementById('prodGrid').innerHTML = list.map(p => `
     <div class="pc ${state.atasan?.id===p.id?'selected':''}" data-id="${p.id}" onclick="selectAtasan('${p.id}')">
       <span class="pc-cat cat-${catClass(p.kategori)}">${p.kategori}</span>
@@ -503,10 +634,7 @@ function renderAtasan(list) {
 }
 
 function renderBawahan(list) {
-  if (!list.length) {
-    document.getElementById('bawahanGrid').innerHTML = `<div style="text-align:center;padding:16px;color:var(--ink3)">Belum ada produk bawahan.</div>`;
-    return;
-  }
+  if (!list.length) { document.getElementById('bawahanGrid').innerHTML = `<div style="text-align:center;padding:16px;color:var(--ink3)">Belum ada produk bawahan.</div>`; return; }
   document.getElementById('bawahanGrid').innerHTML = list.map(b => `
     <div class="bc ${state.bawahan?.id===b.id?'selected':''}" data-id="${b.id}" onclick="selectBawahan('${b.id}')">
       <div class="bc-img">${b.foto_url?`<img src="${b.foto_url}" alt="${b.nama}"/>`:'👖'}</div>
@@ -518,10 +646,7 @@ function renderBawahan(list) {
 }
 
 function renderSuasana(list) {
-  if (!list.length) {
-    document.getElementById('suasanaGrid').innerHTML = `<div style="text-align:center;padding:16px;color:var(--ink3)">Belum ada suasana.</div>`;
-    return;
-  }
+  if (!list.length) { document.getElementById('suasanaGrid').innerHTML = `<div style="text-align:center;padding:16px;color:var(--ink3)">Belum ada suasana.</div>`; return; }
   document.getElementById('suasanaGrid').innerHTML = list.map(s => `
     <div class="sc ${state.suasana?.id===s.id?'selected':''}" data-id="${s.id}" onclick="selectSuasana('${s.id}')">
       <span class="sc-ico">${s.icon||'🌆'}</span>
@@ -530,52 +655,39 @@ function renderSuasana(list) {
     </div>`).join('');
 }
 
-// ── SELECT HANDLERS ──
 window.selectAtasan = id => {
   state.atasan = allAtasan.find(a => a.id === id);
   state.atasanKat = state.atasan?.kategori;
   document.querySelectorAll('.pc').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
-  updateBawahanState();
-  updateVal(1, true);
-  updateBtn();
+  updateBawahanState(); updateVal(1, true); updateBtn();
 };
-
 window.selectBawahan = id => {
   state.bawahan = allBawahan.find(b => b.id === id);
   document.querySelectorAll('.bc').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
-  updateVal(4, true);
-  updateBtn();
+  updateVal(4, true); updateBtn();
 };
-
 window.selectSuasana = id => {
   state.suasana = allSuasana.find(s => s.id === id);
   document.querySelectorAll('.sc').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
-  updateVal(5, true);
-  updateBtn();
+  updateVal(5, true); updateBtn();
 };
 
 function updateBawahanState() {
   const kat = state.atasanKat;
-  const sb4 = document.getElementById('sb4');
-  const sn4 = document.getElementById('sn4');
+  const sb4 = document.getElementById('sb4'), sn4 = document.getElementById('sn4');
   const badge = document.getElementById('step4lockBadge');
-  document.getElementById('bawahanNormal').style.display = 'none';
-  document.getElementById('bawahanLockedGamis').style.display = 'none';
-  document.getElementById('bawahanLockedOneset').style.display = 'none';
+  ['bawahanNormal','bawahanLockedGamis','bawahanLockedOneset'].forEach(id => document.getElementById(id).style.display = 'none');
   if (kat === 'Gamis') {
     document.getElementById('bawahanLockedGamis').style.display = 'block';
-    sb4.classList.add('locked'); sn4.classList.add('locked');
-    badge.style.display = 'inline-flex';
+    sb4.classList.add('locked'); sn4.classList.add('locked'); badge.style.display = 'inline-flex';
     state.bawahan = null; setValSkip(4);
   } else if (kat === 'One Set') {
     document.getElementById('bawahanLockedOneset').style.display = 'block';
-    sb4.classList.add('locked'); sn4.classList.add('locked');
-    badge.style.display = 'inline-flex';
+    sb4.classList.add('locked'); sn4.classList.add('locked'); badge.style.display = 'inline-flex';
     state.bawahan = null; setValSkip(4);
   } else {
     document.getElementById('bawahanNormal').style.display = 'block';
-    sb4.classList.remove('locked'); sn4.classList.remove('locked');
-    badge.style.display = 'none';
+    sb4.classList.remove('locked'); sn4.classList.remove('locked'); badge.style.display = 'none';
     if (!state.bawahan) updateVal(4, false);
   }
 }
@@ -586,15 +698,13 @@ function setValSkip(n) {
   vr.innerHTML = `<div class="vdot skip"></div>Bawahan (tidak perlu)`;
 }
 
-// ── PHOTO UPLOAD ──
 document.getElementById('fotoInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) { alert('Ukuran foto maksimal 5MB'); return; }
   const reader = new FileReader();
   reader.onload = ev => {
-    state.photoFile = file;
-    state.photoDataUrl = ev.target.result;
+    state.photoFile = file; state.photoDataUrl = ev.target.result;
     document.getElementById('prevImg').src = ev.target.result;
     document.getElementById('prevName').textContent = file.name;
     document.getElementById('prevSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
@@ -633,7 +743,6 @@ window.filterPill = (el, cat) => {
   el.classList.add('active');
   renderAtasan(cat === 'semua' ? allAtasan : allAtasan.filter(a => a.kategori === cat));
 };
-
 window.handleSearch = input => {
   const q = input.value.toLowerCase();
   document.getElementById('searchClr').classList.toggle('show', q.length > 0);
@@ -641,7 +750,6 @@ window.handleSearch = input => {
   document.getElementById('prodCnt').textContent = filtered.length + ' produk ditemukan';
   renderAtasan(filtered);
 };
-
 window.clearSearch = () => {
   document.getElementById('searchInput').value = '';
   document.getElementById('searchClr').classList.remove('show');
@@ -656,43 +764,12 @@ function updateVal(n, ok) {
   const dot = vr.querySelector('.vdot');
   if (dot) dot.className = ok ? 'vdot ok' : 'vdot';
 }
-
 function updateBtn() {
   const bawahanOk = NO_BAWAHAN.includes(state.atasanKat) || !!state.bawahan;
   const allOk = !!state.atasan && !!state.photoDataUrl && !!state.height && bawahanOk && !!state.suasana;
   document.getElementById('genBtn').disabled = !allOk;
-  updateVal(1, !!state.atasan);
-  updateVal(2, !!state.photoDataUrl);
-  updateVal(3, !!state.height);
-  updateVal(4, bawahanOk);
-  updateVal(5, !!state.suasana);
-}
-
-function buildPrompt() {
-  const a = state.atasan, b = state.bawahan, s = state.suasana, h = state.height;
-  const rasioA = ((a.panjang_baju / h) * 100).toFixed(0);
-  let outfitDesc = '';
-  if (a.kategori === 'Gamis') {
-    outfitDesc = `Memakai gamis: ${a.deskripsi_ai}, panjang ${a.panjang_baju}cm (${rasioA}% tinggi badan, full length hingga mendekati mata kaki).`;
-  } else if (a.kategori === 'One Set') {
-    outfitDesc = `Memakai one set/setelan lengkap: ${a.deskripsi_ai}, total panjang sekitar ${a.panjang_baju}cm.`;
-  } else {
-    const rasioB = b ? ((b.panjang_baju / h) * 100).toFixed(0) : '';
-    outfitDesc = `Memakai atasan: ${a.deskripsi_ai}, panjang atasan ${a.panjang_baju}cm (${rasioA}% tinggi badan). Dipadukan dengan bawahan: ${b?.deskripsi_ai}, panjang bawahan ${b?.panjang_baju}cm (${rasioB}% tinggi badan).`;
-  }
-  return `Fashion photography editorial, full body portrait of a professional Indonesian Muslim woman.
-
-Height: approximately ${h}cm tall.
-
-Outfit: ${outfitDesc}
-
-The clothing proportions must accurately reflect the person's ${h}cm height. The outfit should look stylish and appropriate for Indonesian working women.
-
-Setting/background: ${s.deskripsi_ai}.
-
-Photography style: clean professional fashion photography, natural soft lighting, sharp focus, full body visible from head to toe, confident natural pose, warm smile. High quality editorial fashion photo.
-
-Important: The woman is wearing a hijab. The outfit must be modest and professional.`;
+  updateVal(1, !!state.atasan); updateVal(2, !!state.photoDataUrl);
+  updateVal(3, !!state.height); updateVal(4, bawahanOk); updateVal(5, !!state.suasana);
 }
 
 window.resetAll = () => {
@@ -708,6 +785,7 @@ window.resetAll = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+function setLoadingSub(msg) { document.getElementById('loadingSub').textContent = msg; }
 function showLoading(s) { document.getElementById('loadingOverlay').classList.toggle('show', s); }
 function showErr(m) { const e = document.getElementById('errMsg'); e.textContent = m; e.classList.add('show'); }
 function hideErr() { document.getElementById('errMsg').classList.remove('show'); }
