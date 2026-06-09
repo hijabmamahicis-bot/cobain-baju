@@ -463,10 +463,10 @@ window.doGenerate = async () => {
     // ── STEP 6: Bangun FormData ──
     setLoadingSub('Mengirim ke AI... mohon tunggu ~30-60 detik');
     const formData = new FormData();
-    formData.append('model', 'gpt-image-1');
+    formData.append('model', 'gpt-image-1.5');
     formData.append('prompt', prompt);
     formData.append('size', '1024x1536');
-    formData.append('quality', 'medium');
+    formData.append('quality', 'high');
     formData.append('n', '1');
 
     // Foto 1 = customer (wajib)
@@ -603,16 +603,90 @@ function showDebugPanel(customerUrl, atasanUrl, bawahanUrl, a, b) {
   });
 }
 
-// ── PROMPT — fokus HANYA ganti baju, semua lain dipertahankan ──
+// ── PROMPT — detail + eksplisit untuk hasil terbaik ──
 function buildPrompt(a, b, h) {
-  // Prompt singkat dan natural — mengikuti gaya yang terbukti efektif di ChatGPT
+  // Untuk gamis/oneset: tidak ada bawahan
   if (a.kategori === 'Gamis' || a.kategori === 'One Set') {
-    return `ganti baju wanita pada foto pertama dengan baju pada foto kedua, pertahankan wajah wanita pada foto pertama`;
-  } else if (b) {
-    return `ganti baju wanita pada foto pertama dengan baju pada foto kedua dan celana pada foto ke tiga, pertahankan wajah wanita pada foto pertama`;
-  } else {
-    return `ganti baju wanita pada foto pertama dengan baju pada foto kedua, pertahankan wajah wanita pada foto pertama`;
+    return `Virtual try-on clothing edit.
+Image 1 is the base customer photo.
+Image 2 is the clothing reference.
+Replace only the clothing in Image 1 with the outfit from Image 2.
+Preserve exactly from Image 1:
+- same face identity
+- same facial expression
+- same hijab color and style
+- same pose and hands
+- same body shape
+- same shoes
+- same background
+- same camera angle and framing
+- same lighting
+Clothing from Image 2: ${a.deskripsi_ai}
+Important:
+- do not create a new person
+- do not change the face
+- do not change the hijab
+- do not change the pose
+- do not change the background
+- replace only the outfit
+- keep the result photorealistic and natural`;
   }
+
+  // Untuk atasan + bawahan
+  if (b) {
+    return `Virtual try-on clothing edit.
+Image 1 is the base customer photo.
+Image 2 is the top clothing reference.
+Image 3 is the pants reference.
+Replace only the clothing in Image 1.
+Use the top from Image 2 and the pants from Image 3.
+Preserve exactly from Image 1:
+- same face identity
+- same facial expression
+- same hijab color and style
+- same pose and hands
+- same body shape
+- same shoes
+- same background
+- same camera angle and framing
+- same lighting
+Top from Image 2: ${a.deskripsi_ai}
+Pants from Image 3: ${b.deskripsi_ai}
+Important:
+- do not create a new person
+- do not change the face
+- do not change the hijab
+- do not change the pose
+- do not change the background
+- replace only the outfit
+- keep the result photorealistic and natural`;
+  }
+
+  // Untuk atasan saja tanpa bawahan
+  return `Virtual try-on clothing edit.
+Image 1 is the base customer photo.
+Image 2 is the top clothing reference.
+Replace only the top in Image 1 with the top from Image 2.
+Preserve exactly from Image 1:
+- same face identity
+- same facial expression
+- same hijab color and style
+- same pose and hands
+- same body shape
+- same pants/skirt/bottom
+- same shoes
+- same background
+- same camera angle and framing
+- same lighting
+Top from Image 2: ${a.deskripsi_ai}
+Important:
+- do not create a new person
+- do not change the face
+- do not change the hijab
+- do not change the pose
+- do not change the background
+- replace only the top
+- keep the result photorealistic and natural`;
 }
 
 // ── FIREBASE ──
