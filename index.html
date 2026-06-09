@@ -18,20 +18,14 @@
   --shadow-md:0 4px 20px rgba(0,0,0,0.09);
 }
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--ink);min-height:100vh}
-
-/* NAV */
 nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
 .nav-brand{display:flex;flex-direction:column;gap:1px}
 .nav-logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);line-height:1}
 .nav-logo span{color:var(--rose);font-style:italic}
 .nav-tag{font-size:.58rem;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
 .nav-right{display:flex;align-items:center;gap:14px}
-.nav-link{font-size:.78rem;color:var(--ink2);text-decoration:none;font-weight:500}
-.nav-link:hover{color:var(--ink)}
 .nav-admin{font-size:.72rem;font-weight:600;color:var(--ink2);border:1.5px solid var(--border);border-radius:6px;padding:5px 11px;text-decoration:none;transition:all .2s}
 .nav-admin:hover{border-color:var(--ink);color:var(--ink)}
-
-/* HERO */
 .hero{background:var(--white);border-bottom:1px solid var(--border);padding:40px 28px 34px;text-align:center}
 .hero-ey{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:9px}
 .hero-ey::before,.hero-ey::after{content:'';display:block;width:24px;height:1px;background:var(--rose);opacity:.4}
@@ -39,11 +33,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .hero h1 em{color:var(--rose);font-style:italic}
 .hero-sub{font-size:.88rem;color:var(--ink2);max-width:420px;margin:0 auto 8px;line-height:1.65}
 .hero-note{font-size:.75rem;color:var(--ink3);display:flex;align-items:center;justify-content:center;gap:5px}
-
-/* MAIN */
 .main{max-width:900px;margin:0 auto;padding:28px 16px 80px}
-
-/* STEP BLOCK */
 .sb{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .3s}
 .sb.done{border-color:#d4e8dc}
 .sb.locked{background:var(--dis-bg);border-color:var(--dis-border)}
@@ -56,12 +46,9 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .sb.locked .sb-name{color:var(--dis-txt)}
 .sb-desc{font-size:.72rem;color:var(--ink3);margin-top:1px}
 .sb.locked .sb-desc{color:var(--dis-txt)}
-.sb-badge-done{font-size:.68rem;font-weight:600;background:var(--green-s);color:var(--green);padding:3px 9px;border-radius:100px;flex-shrink:0}
 .sb-badge-lock{font-size:.68rem;font-weight:600;background:var(--dis-bg);color:var(--dis-txt);padding:3px 9px;border-radius:100px;flex-shrink:0;border:1px solid var(--dis-border)}
 .sb-div{height:1px;background:var(--border);margin:0 20px}
 .sb-body{padding:0 20px 20px}
-
-/* SEARCH */
 .search-wrap{position:relative;margin-bottom:12px}
 .search-input{width:100%;padding:10px 13px 10px 38px;border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.83rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
 .search-input:focus{border-color:var(--rose)}
@@ -69,15 +56,11 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:.85rem;color:var(--ink3);pointer-events:none}
 .search-clr{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--ink3);cursor:pointer;font-size:.82rem;display:none}
 .search-clr.show{display:block}
-
-/* PILLS */
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .pill{padding:5px 12px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);font-size:.72rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;white-space:nowrap}
 .pill:hover{border-color:var(--rose);color:var(--rose)}
 .pill.active{background:var(--rose);border-color:var(--rose);color:#fff}
 .prod-cnt{font-size:.72rem;color:var(--ink3);margin-bottom:12px}
-
-/* PRODUCT GRID */
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:10px}
 .pc{border:2px solid var(--border);border-radius:var(--rsm);overflow:hidden;cursor:pointer;background:var(--snow);transition:border-color .2s,transform .15s,box-shadow .2s;position:relative}
 .pc:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:#d0d0cc}
@@ -96,8 +79,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .pc-name{font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:2px;line-height:1.3}
 .pc-size{font-size:.62rem;color:var(--ink3);margin-bottom:3px}
 .pc-price{font-size:.78rem;font-weight:700;color:var(--rose)}
-
-/* UPLOAD */
 .upload-zone{border:2px dashed var(--border);border-radius:var(--rsm);padding:28px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .upload-zone:hover{border-color:var(--rose);background:var(--rose-s)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
@@ -113,14 +94,10 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .prev-priv{font-size:.65rem;color:var(--green);font-weight:600;margin-top:4px;display:flex;align-items:center;gap:3px}
 .btn-rm{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:1rem;padding:3px;border-radius:4px;transition:color .2s;flex-shrink:0}
 .btn-rm:hover{color:var(--rose)}
-
-/* HEIGHT */
 .height-row{display:flex;align-items:center;gap:9px;max-width:170px}
 .height-input{flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.95rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
 .height-input:focus{border-color:var(--rose)}
 .height-unit{font-size:.85rem;font-weight:600;color:var(--ink2)}
-
-/* BAWAHAN */
 .bawahan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:9px}
 .bc{border:2px solid var(--border);border-radius:var(--rsm);overflow:hidden;cursor:pointer;background:var(--snow);transition:border-color .2s,transform .15s;position:relative}
 .bc:hover{transform:translateY(-2px);border-color:#d0d0cc}
@@ -131,8 +108,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .bc-info{padding:7px 9px 9px}
 .bc-name{font-size:.72rem;font-weight:600;color:var(--ink);margin-bottom:2px}
 .bc-price{font-size:.72rem;font-weight:700;color:var(--rose)}
-
-/* LOCKED BAWAHAN */
 .bawahan-locked{background:var(--dis-bg);border-radius:var(--rsm);padding:24px 18px;text-align:center}
 .lk-ico{font-size:1.8rem;margin-bottom:8px}
 .lk-title{font-size:.85rem;font-weight:700;color:var(--dis-txt);margin-bottom:3px}
@@ -140,8 +115,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .lk-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;padding:3px 11px;border-radius:100px;margin-top:8px}
 .lk-badge.gamis{background:#e8d5f5;color:#7b3fa0}
 .lk-badge.oneset{background:#d5e8f5;color:#2563a0}
-
-/* SUASANA */
 .suasana-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:9px}
 .sc{border:2px solid var(--border);border-radius:var(--rsm);padding:14px 10px;text-align:center;cursor:pointer;background:var(--white);transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:6px}
 .sc:hover{border-color:#d0d0cc;background:var(--snow)}
@@ -149,8 +122,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .sc-ico{font-size:1.7rem}
 .sc-name{font-size:.75rem;font-weight:700;color:var(--ink)}
 .sc-desc{font-size:.64rem;color:var(--ink3);line-height:1.4}
-
-/* VALIDATION */
 .val-strip{background:var(--white);border:1px solid var(--border);border-radius:var(--rsm);padding:12px 16px;margin-bottom:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:7px}
 .vr{display:flex;align-items:center;gap:7px;font-size:.73rem;color:var(--ink3)}
 .vr.ok{color:var(--ink2)}
@@ -158,18 +129,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .vdot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s}
 .vdot.ok{background:var(--green)}
 .vdot.skip{background:var(--dis-border)}
-
-/* GENERATE */
 .gen-btn{width:100%;padding:16px;background:var(--rose);color:#fff;border:none;border-radius:var(--radius);font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 4px 16px rgba(200,80,74,.2)}
 .gen-btn:hover:not(:disabled){background:var(--rose-h);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,80,74,.28)}
 .gen-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;transform:none}
 .gen-note{text-align:center;font-size:.68rem;color:var(--ink3);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:4px}
-
-/* ERROR */
 .err-msg{display:none;background:#fdf0f0;border:1px solid #e8c0c0;border-radius:var(--rsm);padding:12px 14px;font-size:.82rem;color:var(--rose);margin-top:10px}
 .err-msg.show{display:block}
-
-/* RESULT */
 .result-sec{display:none;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-align:center;margin-top:18px}
 .result-sec.show{display:block}
 .res-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-s);color:var(--green);font-size:.7rem;font-weight:700;padding:3px 11px;border-radius:100px;margin-bottom:12px}
@@ -184,19 +149,14 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 .btn-again{padding:10px 20px;background:var(--white);color:var(--ink);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:border-color .2s}
 .btn-again:hover{border-color:var(--ink)}
 .res-priv{font-size:.65rem;color:var(--ink3);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:3px}
-
-/* LOADING */
 .loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(4px)}
 .loading.show{display:flex}
 .spinner{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--rose);border-radius:50%;animation:spin .85s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-txt{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink)}
 .loading-sub{font-size:.75rem;color:var(--ink2);text-align:center;max-width:240px}
-
-/* FOOTER */
 footer{background:var(--ink);color:rgba(255,255,255,.3);text-align:center;padding:20px;font-size:.68rem;letter-spacing:.04em}
 footer span{color:rgba(255,255,255,.55)}
-
 @media(max-width:600px){
   nav{padding:0 12px}.hero{padding:28px 12px 22px}
   .main{padding:14px 10px 60px}
@@ -227,8 +187,6 @@ footer span{color:rgba(255,255,255,.55)}
 </div>
 
 <div class="main">
-
-  <!-- STEP 1: PILIH ATASAN -->
   <div class="sb" id="sb1">
     <div class="sb-head">
       <div class="sb-num" id="sn1">1</div>
@@ -252,7 +210,6 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
-  <!-- STEP 2: UPLOAD FOTO -->
   <div class="sb" id="sb2">
     <div class="sb-head">
       <div class="sb-num" id="sn2">2</div>
@@ -270,7 +227,7 @@ footer span{color:rgba(255,255,255,.55)}
         <div class="upload-hint">JPG · PNG · Maks 5MB · Foto tidak dikirim ke server</div>
       </div>
       <div class="photo-prev" id="photoPrev">
-        <div class="prev-thumb" id="prevThumb"><img id="prevImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px"/></div>
+        <div class="prev-thumb"><img id="prevImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px"/></div>
         <div class="prev-meta">
           <div class="prev-name" id="prevName">—</div>
           <div class="prev-size" id="prevSize">—</div>
@@ -281,7 +238,6 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
-  <!-- STEP 3: TINGGI BADAN -->
   <div class="sb" id="sb3">
     <div class="sb-head">
       <div class="sb-num" id="sn3">3</div>
@@ -299,7 +255,6 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
-  <!-- STEP 4: BAWAHAN -->
   <div class="sb" id="sb4">
     <div class="sb-head">
       <div class="sb-num" id="sn4">4</div>
@@ -333,7 +288,6 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
-  <!-- STEP 5: SUASANA -->
   <div class="sb" id="sb5">
     <div class="sb-head">
       <div class="sb-num" id="sn5">5</div>
@@ -348,7 +302,6 @@ footer span{color:rgba(255,255,255,.55)}
     </div>
   </div>
 
-  <!-- VALIDATION -->
   <div class="val-strip" id="valStrip">
     <div class="vr" id="v1"><div class="vdot" id="vd1"></div>Pilih atasan</div>
     <div class="vr" id="v2"><div class="vdot" id="vd2"></div>Upload foto</div>
@@ -357,12 +310,10 @@ footer span{color:rgba(255,255,255,.55)}
     <div class="vr" id="v5"><div class="vdot" id="vd5"></div>Pilih suasana</div>
   </div>
 
-  <!-- GENERATE -->
   <button class="gen-btn" id="genBtn" disabled onclick="doGenerate()">✨ Cobain Sekarang!</button>
   <div class="gen-note">🔒 Foto diproses langsung oleh AI · Tidak disimpan di manapun</div>
   <div class="err-msg" id="errMsg"></div>
 
-  <!-- RESULT -->
   <div class="result-sec" id="resultSec">
     <div class="res-badge">✅ Hasil Generate</div>
     <div class="res-title">Ini tampilan kamu, say! 🎉</div>
@@ -371,7 +322,6 @@ footer span{color:rgba(255,255,255,.55)}
     <div class="res-actions" id="resActions"></div>
     <div class="res-priv">🔒 Foto otomatis terhapus saat kamu tutup halaman ini</div>
   </div>
-
 </div>
 
 <div class="loading" id="loadingOverlay">
@@ -400,12 +350,30 @@ const firebaseConfig = {
 const OPENAI_KEY_STORAGE = 'hmi_oai_key';
 const NO_BAWAHAN = ['Gamis', 'One Set'];
 
+// ── STATE ──
+const state = {
+  atasan: null, atasanKat: null,
+  photoDataUrl: null, photoFile: null,
+  height: null, bawahan: null,
+  suasana: null, resultUrl: null
+};
+
+let allAtasan = [], allBawahan = [], allSuasana = [];
+
 // ── GENERATE ──
+// PERUBAHAN UTAMA: dall-e-3 diganti gpt-image-1
+// - model: 'gpt-image-1'
+// - size: '1024x1536' (portrait, gpt-image-1 tidak support 1024x1792)
+// - quality: 'medium' (gpt-image-1 pakai low/medium/high, bukan standard/hd)
+// - response: b64_json (bukan URL), perlu konversi ke data URL
 window.doGenerate = async () => {
-  let apiKey = localStorage.getItem(OPENAI_KEY_STORAGE)||'';
+  let apiKey = localStorage.getItem(OPENAI_KEY_STORAGE) || '';
   if (!apiKey || !apiKey.startsWith('sk-')) {
     apiKey = prompt('Masukkan OpenAI API Key kamu:\n(dimulai dengan sk-...)');
-    if (!apiKey || !apiKey.startsWith('sk-')) { showErr('API Key tidak valid. Harus dimulai dengan sk-'); return; }
+    if (!apiKey || !apiKey.startsWith('sk-')) {
+      showErr('API Key tidak valid. Harus dimulai dengan sk-');
+      return;
+    }
     localStorage.setItem(OPENAI_KEY_STORAGE, apiKey);
   }
 
@@ -414,6 +382,7 @@ window.doGenerate = async () => {
 
   try {
     const prompt = buildPrompt();
+
     const res = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -421,28 +390,31 @@ window.doGenerate = async () => {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'dall-e-3',
+        model: 'gpt-image-1',
         prompt: prompt,
         n: 1,
-        size: '1024x1792',
-        quality: 'standard'
+        size: '1024x1536',
+        quality: 'medium'
       })
     });
 
     const data = await res.json();
+
     if (!res.ok) {
       if (res.status === 401) {
         localStorage.removeItem(OPENAI_KEY_STORAGE);
-        throw new Error('API Key tidak valid. Masukkan key yang benar.');
+        throw new Error('API Key tidak valid atau sudah expired. Silakan masukkan key yang baru.');
       }
-      throw new Error(data?.error?.message || 'Gagal generate gambar');
+      throw new Error(data?.error?.message || 'Gagal generate gambar. Coba beberapa saat lagi.');
     }
 
-    const imgUrl = data.data[0].url;
-    state.resultUrl = imgUrl;
+    // gpt-image-1 mengembalikan base64, bukan URL
+    const b64 = data.data[0].b64_json;
+    const imgDataUrl = `data:image/png;base64,${b64}`;
+    state.resultUrl = imgDataUrl;
 
     const resImg = document.getElementById('resImg');
-    resImg.src = imgUrl;
+    resImg.src = imgDataUrl;
     resImg.onload = () => {
       const a = state.atasan;
       const b = state.bawahan;
@@ -452,52 +424,45 @@ window.doGenerate = async () => {
       sub += ` · Suasana: ${s.nama}`;
       document.getElementById('resSub').textContent = sub;
 
-      let actions = `<a class="btn-dl" href="${imgUrl}" download="hijabmamahicis-tryon.png" target="_blank">⬇ Download Foto</a>`;
+      // Buat blob URL untuk download
+      const byteStr = atob(b64);
+      const ab = new ArrayBuffer(byteStr.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+      const blob = new Blob([ab], { type: 'image/png' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      let actions = `<a class="btn-dl" href="${blobUrl}" download="hijabmamahicis-tryon.png">⬇ Download Foto</a>`;
       if (a.link_shopee) actions += `<a class="btn-shopee" href="${a.link_shopee}" target="_blank">🛒 Beli Atasan</a>`;
       if (b?.link_shopee) actions += `<a class="btn-shopee" href="${b.link_shopee}" target="_blank">🛒 Beli Bawahan</a>`;
       actions += `<button class="btn-again" onclick="resetAll()">↺ Coba Lagi</button>`;
       document.getElementById('resActions').innerHTML = actions;
 
       document.getElementById('resultSec').classList.add('show');
-      document.getElementById('resultSec').scrollIntoView({behavior:'smooth',block:'start'});
+      document.getElementById('resultSec').scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
+
   } catch(e) {
-    showErr('❌ '+e.message);
+    showErr('❌ ' + e.message);
   } finally {
     showLoading(false);
   }
 };
 
+// ── LOAD DATA ──
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ── STATE ──
-const state = {
-  atasan: null,         // selected atasan object
-  atasanKat: null,
-  photoDataUrl: null,
-  photoFile: null,
-  height: null,
-  bawahan: null,        // selected bawahan object
-  suasana: null,        // selected suasana object
-  resultUrl: null
-};
-
-let allAtasan = [];
-let allBawahan = [];
-let allSuasana = [];
-
-// ── LOAD DATA ──
 async function loadData() {
   try {
     const [snapA, snapB, snapS] = await Promise.all([
-      getDocs(collection(db,'koleksi_atasan')),
-      getDocs(collection(db,'koleksi_bawahan')),
-      getDocs(collection(db,'koleksi_suasana')),
+      getDocs(collection(db, 'koleksi_atasan')),
+      getDocs(collection(db, 'koleksi_bawahan')),
+      getDocs(collection(db, 'koleksi_suasana')),
     ]);
-    snapA.forEach(d => { const data = d.data(); if(data.aktif !== false) allAtasan.push({id:d.id,...data}); });
-    snapB.forEach(d => { const data = d.data(); if(data.aktif !== false) allBawahan.push({id:d.id,...data}); });
-    snapS.forEach(d => { const data = d.data(); if(data.aktif !== false) allSuasana.push({id:d.id,...data}); });
+    snapA.forEach(d => { const d2 = d.data(); if (d2.aktif !== false) allAtasan.push({ id: d.id, ...d2 }); });
+    snapB.forEach(d => { const d2 = d.data(); if (d2.aktif !== false) allBawahan.push({ id: d.id, ...d2 }); });
+    snapS.forEach(d => { const d2 = d.data(); if (d2.aktif !== false) allSuasana.push({ id: d.id, ...d2 }); });
     renderAtasan(allAtasan);
     renderBawahan(allBawahan);
     renderSuasana(allSuasana);
@@ -508,15 +473,15 @@ async function loadData() {
 }
 
 function buildPills() {
-  const cats = [...new Set(allAtasan.map(a=>a.kategori))].filter(Boolean);
+  const cats = [...new Set(allAtasan.map(a => a.kategori))].filter(Boolean);
   const wrap = document.getElementById('pillsWrap');
   wrap.innerHTML = `<div class="pill active" onclick="filterPill(this,'semua')">Semua</div>` +
-    cats.map(c=>`<div class="pill" onclick="filterPill(this,'${c}')">${c}</div>`).join('');
+    cats.map(c => `<div class="pill" onclick="filterPill(this,'${c}')">${c}</div>`).join('');
 }
 
 function catClass(kat) {
-  const m = {Kemeja:'kemeja',Tunik:'tunik',Gamis:'gamis',Blouse:'blouse','Outer / Blazer':'outer','One Set':'oneset'};
-  return m[kat]||'kemeja';
+  const m = { Kemeja:'kemeja', Tunik:'tunik', Gamis:'gamis', Blouse:'blouse', 'Outer / Blazer':'outer', 'One Set':'oneset' };
+  return m[kat] || 'kemeja';
 }
 
 function renderAtasan(list) {
@@ -526,7 +491,7 @@ function renderAtasan(list) {
     return;
   }
   document.getElementById('prodGrid').innerHTML = list.map(p => `
-    <div class="pc ${state.atasan?.id===p.id?'selected':''}" data-id="${p.id}" data-kat="${p.kategori}" onclick="selectAtasan('${p.id}')">
+    <div class="pc ${state.atasan?.id===p.id?'selected':''}" data-id="${p.id}" onclick="selectAtasan('${p.id}')">
       <span class="pc-cat cat-${catClass(p.kategori)}">${p.kategori}</span>
       <div class="pc-img">${p.foto_url?`<img src="${p.foto_url}" alt="${p.nama}"/>`:'👔'}</div>
       <div class="pc-info">
@@ -567,64 +532,57 @@ function renderSuasana(list) {
 
 // ── SELECT HANDLERS ──
 window.selectAtasan = id => {
-  state.atasan = allAtasan.find(a=>a.id===id);
+  state.atasan = allAtasan.find(a => a.id === id);
   state.atasanKat = state.atasan?.kategori;
-  document.querySelectorAll('.pc').forEach(el => el.classList.toggle('selected', el.dataset.id===id));
+  document.querySelectorAll('.pc').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
   updateBawahanState();
-  updateVal(1,true);
+  updateVal(1, true);
   updateBtn();
 };
 
 window.selectBawahan = id => {
-  state.bawahan = allBawahan.find(b=>b.id===id);
-  document.querySelectorAll('.bc').forEach(el => el.classList.toggle('selected', el.dataset.id===id));
+  state.bawahan = allBawahan.find(b => b.id === id);
+  document.querySelectorAll('.bc').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
   updateVal(4, true);
   updateBtn();
 };
 
 window.selectSuasana = id => {
-  state.suasana = allSuasana.find(s=>s.id===id);
-  document.querySelectorAll('.sc').forEach(el => el.classList.toggle('selected', el.dataset.id===id));
-  updateVal(5,true);
+  state.suasana = allSuasana.find(s => s.id === id);
+  document.querySelectorAll('.sc').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+  updateVal(5, true);
   updateBtn();
 };
 
 function updateBawahanState() {
   const kat = state.atasanKat;
-  const isLocked = NO_BAWAHAN.includes(kat);
   const sb4 = document.getElementById('sb4');
   const sn4 = document.getElementById('sn4');
   const badge = document.getElementById('step4lockBadge');
-
   document.getElementById('bawahanNormal').style.display = 'none';
   document.getElementById('bawahanLockedGamis').style.display = 'none';
   document.getElementById('bawahanLockedOneset').style.display = 'none';
-
-  if (kat==='Gamis') {
+  if (kat === 'Gamis') {
     document.getElementById('bawahanLockedGamis').style.display = 'block';
     sb4.classList.add('locked'); sn4.classList.add('locked');
     badge.style.display = 'inline-flex';
-    state.bawahan = null;
-    setValSkip(4);
-  } else if (kat==='One Set') {
+    state.bawahan = null; setValSkip(4);
+  } else if (kat === 'One Set') {
     document.getElementById('bawahanLockedOneset').style.display = 'block';
     sb4.classList.add('locked'); sn4.classList.add('locked');
     badge.style.display = 'inline-flex';
-    state.bawahan = null;
-    setValSkip(4);
+    state.bawahan = null; setValSkip(4);
   } else {
     document.getElementById('bawahanNormal').style.display = 'block';
     sb4.classList.remove('locked'); sn4.classList.remove('locked');
     badge.style.display = 'none';
-    if (!state.bawahan) updateVal(4,false);
+    if (!state.bawahan) updateVal(4, false);
   }
 }
 
 function setValSkip(n) {
   const vr = document.getElementById(`v${n}`);
-  const vd = document.getElementById(`vd${n}`);
   vr.className = 'vr ok skip';
-  vd.className = 'vdot skip';
   vr.innerHTML = `<div class="vdot skip"></div>Bawahan (tidak perlu)`;
 }
 
@@ -632,113 +590,96 @@ function setValSkip(n) {
 document.getElementById('fotoInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
-  if (file.size > 5*1024*1024) { alert('Ukuran foto maksimal 5MB'); return; }
+  if (file.size > 5 * 1024 * 1024) { alert('Ukuran foto maksimal 5MB'); return; }
   const reader = new FileReader();
   reader.onload = ev => {
     state.photoFile = file;
     state.photoDataUrl = ev.target.result;
     document.getElementById('prevImg').src = ev.target.result;
     document.getElementById('prevName').textContent = file.name;
-    document.getElementById('prevSize').textContent = (file.size/1024).toFixed(0)+' KB';
+    document.getElementById('prevSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
     document.getElementById('uploadZone').style.display = 'none';
     document.getElementById('photoPrev').classList.add('show');
-    updateVal(2,true); updateBtn();
+    updateVal(2, true); updateBtn();
   };
   reader.readAsDataURL(file);
 });
 
 const uz = document.getElementById('uploadZone');
-uz.addEventListener('dragover', e=>{e.preventDefault();uz.style.borderColor='var(--rose)';uz.style.background='var(--rose-s)'});
-uz.addEventListener('dragleave', ()=>{uz.style.borderColor='';uz.style.background=''});
-uz.addEventListener('drop', e=>{
-  e.preventDefault(); uz.style.borderColor=''; uz.style.background='';
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.style.borderColor = 'var(--rose)'; uz.style.background = 'var(--rose-s)'; });
+uz.addEventListener('dragleave', () => { uz.style.borderColor = ''; uz.style.background = ''; });
+uz.addEventListener('drop', e => {
+  e.preventDefault(); uz.style.borderColor = ''; uz.style.background = '';
   const file = e.dataTransfer.files[0];
-  if(file){const dt=new DataTransfer();dt.items.add(file);document.getElementById('fotoInput').files=dt.files;document.getElementById('fotoInput').dispatchEvent(new Event('change'));}
+  if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById('fotoInput').files = dt.files; document.getElementById('fotoInput').dispatchEvent(new Event('change')); }
 });
 
 window.removePhoto = () => {
-  state.photoFile=null; state.photoDataUrl=null;
-  document.getElementById('fotoInput').value='';
-  document.getElementById('uploadZone').style.display='';
+  state.photoFile = null; state.photoDataUrl = null;
+  document.getElementById('fotoInput').value = '';
+  document.getElementById('uploadZone').style.display = '';
   document.getElementById('photoPrev').classList.remove('show');
-  updateVal(2,false); updateBtn();
+  updateVal(2, false); updateBtn();
 };
 
-// ── HEIGHT ──
 window.onHeightChange = () => {
   const v = parseInt(document.getElementById('heightInput').value);
-  state.height = (v>=100&&v<=220) ? v : null;
-  updateVal(3,!!state.height); updateBtn();
+  state.height = (v >= 100 && v <= 220) ? v : null;
+  updateVal(3, !!state.height); updateBtn();
 };
 
-// ── FILTER / SEARCH ──
 window.filterPill = (el, cat) => {
-  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
-  const filtered = cat==='semua' ? allAtasan : allAtasan.filter(a=>a.kategori===cat);
-  renderAtasan(filtered);
+  renderAtasan(cat === 'semua' ? allAtasan : allAtasan.filter(a => a.kategori === cat));
 };
 
 window.handleSearch = input => {
   const q = input.value.toLowerCase();
-  document.getElementById('searchClr').classList.toggle('show', q.length>0);
-  const filtered = allAtasan.filter(a=>a.nama.toLowerCase().includes(q)||a.kategori.toLowerCase().includes(q));
-  document.getElementById('prodCnt').textContent = filtered.length+' produk ditemukan';
+  document.getElementById('searchClr').classList.toggle('show', q.length > 0);
+  const filtered = allAtasan.filter(a => a.nama.toLowerCase().includes(q) || a.kategori.toLowerCase().includes(q));
+  document.getElementById('prodCnt').textContent = filtered.length + ' produk ditemukan';
   renderAtasan(filtered);
 };
 
 window.clearSearch = () => {
-  document.getElementById('searchInput').value='';
+  document.getElementById('searchInput').value = '';
   document.getElementById('searchClr').classList.remove('show');
   renderAtasan(allAtasan);
-  document.getElementById('prodCnt').textContent = allAtasan.length+' produk tersedia';
+  document.getElementById('prodCnt').textContent = allAtasan.length + ' produk tersedia';
 };
 
-// ── VALIDATION ──
 function updateVal(n, ok) {
-  const vr = document.getElementById('v'+n);
-  const vd = document.getElementById('vd'+n);
-  if (!vr || !vd) return;
-  const labels = ['','Atasan dipilih','Foto diupload','Tinggi badan','Bawahan dipilih','Suasana dipilih'];
+  const vr = document.getElementById('v' + n);
+  if (!vr) return;
   vr.className = ok ? 'vr ok' : 'vr';
   const dot = vr.querySelector('.vdot');
   if (dot) dot.className = ok ? 'vdot ok' : 'vdot';
-}
-
-function refreshAllVal() {
-  updateVal(1, !!state.atasan);
-  updateVal(2, !!state.photoDataUrl);
-  updateVal(3, !!state.height);
-  const bawahanOk = NO_BAWAHAN.includes(state.atasanKat) || !!state.bawahan;
-  updateVal(4, bawahanOk);
-  updateVal(5, !!state.suasana);
 }
 
 function updateBtn() {
   const bawahanOk = NO_BAWAHAN.includes(state.atasanKat) || !!state.bawahan;
   const allOk = !!state.atasan && !!state.photoDataUrl && !!state.height && bawahanOk && !!state.suasana;
   document.getElementById('genBtn').disabled = !allOk;
-  refreshAllVal();
+  updateVal(1, !!state.atasan);
+  updateVal(2, !!state.photoDataUrl);
+  updateVal(3, !!state.height);
+  updateVal(4, bawahanOk);
+  updateVal(5, !!state.suasana);
 }
 
-// ── BUILD PROMPT ──
 function buildPrompt() {
-  const a = state.atasan;
-  const b = state.bawahan;
-  const s = state.suasana;
-  const h = state.height;
-  const rasioAtasan = ((a.panjang_baju/h)*100).toFixed(0);
-
+  const a = state.atasan, b = state.bawahan, s = state.suasana, h = state.height;
+  const rasioA = ((a.panjang_baju / h) * 100).toFixed(0);
   let outfitDesc = '';
-  if (a.kategori==='Gamis') {
-    outfitDesc = `Memakai gamis: ${a.deskripsi_ai}, panjang ${a.panjang_baju}cm (${rasioAtasan}% tinggi badan, full length hingga mendekati mata kaki).`;
-  } else if (a.kategori==='One Set') {
+  if (a.kategori === 'Gamis') {
+    outfitDesc = `Memakai gamis: ${a.deskripsi_ai}, panjang ${a.panjang_baju}cm (${rasioA}% tinggi badan, full length hingga mendekati mata kaki).`;
+  } else if (a.kategori === 'One Set') {
     outfitDesc = `Memakai one set/setelan lengkap: ${a.deskripsi_ai}, total panjang sekitar ${a.panjang_baju}cm.`;
   } else {
-    const rasioB = b ? ((b.panjang_baju/h)*100).toFixed(0) : '';
-    outfitDesc = `Memakai atasan: ${a.deskripsi_ai}, panjang atasan ${a.panjang_baju}cm (${rasioAtasan}% tinggi badan). Dipadukan dengan bawahan: ${b?.deskripsi_ai}, panjang bawahan ${b?.panjang_baju}cm (${rasioB}% tinggi badan).`;
+    const rasioB = b ? ((b.panjang_baju / h) * 100).toFixed(0) : '';
+    outfitDesc = `Memakai atasan: ${a.deskripsi_ai}, panjang atasan ${a.panjang_baju}cm (${rasioA}% tinggi badan). Dipadukan dengan bawahan: ${b?.deskripsi_ai}, panjang bawahan ${b?.panjang_baju}cm (${rasioB}% tinggi badan).`;
   }
-
   return `Fashion photography editorial, full body portrait of a professional Indonesian Muslim woman.
 
 Height: approximately ${h}cm tall.
@@ -755,26 +696,22 @@ Important: The woman is wearing a hijab. The outfit must be modest and professio
 }
 
 window.resetAll = () => {
-  state.atasan=null; state.atasanKat=null;
-  state.photoFile=null; state.photoDataUrl=null;
-  state.height=null; state.bawahan=null;
-  state.suasana=null; state.resultUrl=null;
-  document.getElementById('fotoInput').value='';
-  document.getElementById('uploadZone').style.display='';
+  Object.assign(state, { atasan:null, atasanKat:null, photoFile:null, photoDataUrl:null, height:null, bawahan:null, suasana:null, resultUrl:null });
+  document.getElementById('fotoInput').value = '';
+  document.getElementById('uploadZone').style.display = '';
   document.getElementById('photoPrev').classList.remove('show');
-  document.getElementById('heightInput').value='';
+  document.getElementById('heightInput').value = '';
   document.getElementById('resultSec').classList.remove('show');
-  document.querySelectorAll('.pc,.bc,.sc').forEach(el=>el.classList.remove('selected'));
-  for(let i=1;i<=5;i++) updateVal(i,false);
+  document.querySelectorAll('.pc,.bc,.sc').forEach(el => el.classList.remove('selected'));
+  for (let i = 1; i <= 5; i++) updateVal(i, false);
   updateBtn(); hideErr();
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-function showLoading(s) { document.getElementById('loadingOverlay').classList.toggle('show',s); }
-function showErr(m) { const e=document.getElementById('errMsg'); e.textContent=m; e.classList.add('show'); }
+function showLoading(s) { document.getElementById('loadingOverlay').classList.toggle('show', s); }
+function showErr(m) { const e = document.getElementById('errMsg'); e.textContent = m; e.classList.add('show'); }
 function hideErr() { document.getElementById('errMsg').classList.remove('show'); }
 
-// ── INIT ──
 loadData();
 </script>
 </body>
