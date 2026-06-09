@@ -377,7 +377,7 @@ footer span{color:rgba(255,255,255,.55)}
 <div class="loading" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-txt">Mamah lagi siapin tampilanmu… 🌸</div>
-  <div class="loading-sub">AI sedang memadukan baju, foto, dan suasana pilihanmu</div>
+  <div class="loading-sub">AI sedang memproses, mohon tunggu sekitar 30-60 detik ya</div>
 </div>
 
 <footer>
@@ -397,7 +397,7 @@ const firebaseConfig = {
   appId: "1:624533718968:web:8bfe5ce893e830fb87f14d"
 };
 
-const OPENAI_KEY_STORAGE = 'hmi_oai_key';
+const REPLICATE_KEY_STORAGE = 'hmi_rep_key';
 const NO_BAWAHAN = ['Gamis','One Set'];
 
 const app = initializeApp(firebaseConfig);
@@ -511,7 +511,12 @@ window.selectAtasan = id => {
 window.selectBawahan = id => {
   state.bawahan = allBawahan.find(b=>b.id===id);
   document.querySelectorAll('.bc').forEach(el => el.classList.toggle('selected', el.dataset.id===id));
-  updateVal(4,true);
+  // Reset val row 4 to normal before updating
+  const vr=document.getElementById('v4');
+  const vd=document.getElementById('vd4');
+  vr.className='vr ok';
+  vd.className='vdot ok';
+  vr.innerHTML='<div class="vdot ok"></div>Bawahan dipilih';
   updateBtn();
 };
 
@@ -679,11 +684,11 @@ Important: The woman is wearing a hijab. The outfit must be modest and professio
 
 // ── GENERATE ──
 window.doGenerate = async () => {
-  let apiKey = localStorage.getItem(OPENAI_KEY_STORAGE)||'';
-  if (!apiKey || !apiKey.startsWith('sk-')) {
-    apiKey = prompt('Masukkan OpenAI API Key kamu:\n(dimulai dengan sk-...)');
-    if (!apiKey || !apiKey.startsWith('sk-')) { showErr('API Key tidak valid. Harus dimulai dengan sk-'); return; }
-    localStorage.setItem(OPENAI_KEY_STORAGE, apiKey);
+  let apiKey = localStorage.getItem(REPLICATE_KEY_STORAGE)||'';
+  if (!apiKey || !apiKey.startsWith('r8_')) {
+    apiKey = prompt('Masukkan Replicate API Token kamu:\n(dimulai dengan r8_...)');
+    if (!apiKey || !apiKey.startsWith('r8_')) { showErr('API Token tidak valid. Harus dimulai dengan r8_'); return; }
+    localStorage.setItem(REPLICATE_KEY_STORAGE, apiKey);
   }
 
   hideErr();
@@ -691,21 +696,53 @@ window.doGenerate = async () => {
 
   try {
     const prompt = buildPrompt();
-    const res = await fetch('https://api.openai.com/v1/images/generations', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
-      body:JSON.stringify({model:'dall-e-3',prompt,n:1,size:'1024x1792',quality:'standard',response_format:'url'})
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data?.error?.message||'Gagal generate gambar');
 
-    const imgUrl = data.data[0].url;
+    // Start prediction
+    const startRes = await fetch('https://api.replicate.com/v1/models/stability-ai/stable-diffusion-3.5-large/predictions', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${apiKey}`,
+        'Prefer':'wait'
+      },
+      body:JSON.stringify({
+        input:{
+          prompt: prompt,
+          negative_prompt: "low quality, blurry, distorted, extra limbs, bad anatomy, watermark, text, nude, nsfw",
+          aspect_ratio: "9:16",
+          output_format: "webp",
+          output_quality: 80,
+          num_inference_steps: 28,
+          guidance_scale: 4.5
+        }
+      })
+    });
+
+    const data = await startRes.json();
+
+    if (!startRes.ok) throw new Error(data?.detail || 'Gagal memulai generate');
+
+    // Poll for result if not done yet
+    let result = data;
+    let attempts = 0;
+    while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 60) {
+      await new Promise(r => setTimeout(r, 2000));
+      const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
+        headers:{'Authorization':`Bearer ${apiKey}`}
+      });
+      result = await pollRes.json();
+      attempts++;
+    }
+
+    if (result.status === 'failed') throw new Error(result.error || 'Generate gagal');
+    if (!result.output || !result.output[0]) throw new Error('Tidak ada hasil gambar');
+
+    const imgUrl = result.output[0];
     state.resultUrl = imgUrl;
 
     const resImg = document.getElementById('resImg');
     resImg.src = imgUrl;
     resImg.onload = () => {
-      // Sub text
       const a = state.atasan;
       const b = state.bawahan;
       const s = state.suasana;
@@ -714,8 +751,7 @@ window.doGenerate = async () => {
       sub += ` · Suasana: ${s.nama}`;
       document.getElementById('resSub').textContent = sub;
 
-      // Actions
-      let actions = `<a class="btn-dl" href="${imgUrl}" download="hijabmamahicis-tryon.png" target="_blank">⬇ Download Foto</a>`;
+      let actions = `<a class="btn-dl" href="${imgUrl}" download="hijabmamahicis-tryon.webp" target="_blank">⬇ Download Foto</a>`;
       if (a.link_shopee) actions += `<a class="btn-shopee" href="${a.link_shopee}" target="_blank">🛒 Beli Atasan</a>`;
       if (b?.link_shopee) actions += `<a class="btn-shopee" href="${b.link_shopee}" target="_blank">🛒 Beli Bawahan</a>`;
       actions += `<button class="btn-again" onclick="resetAll()">↺ Coba Lagi</button>`;
