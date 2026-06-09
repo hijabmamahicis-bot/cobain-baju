@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Hijab Mamah Icis</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#fff;--snow:#f9f9f9;--bg:#f4f4f2;--border:#e8e8e4;
+  --ink:#18181a;--ink2:#6b6b70;--ink3:#a8a8ae;
+  --rose:#c8504a;--rose-s:#fdf1f0;--rose-h:#a83e38;
+  --green:#2a7a52;--green-s:#eef6f1;
+  --sid:220px;--radius:10px;--rsm:7px;
+  --shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--snow);display:flex;align-items:center;justify-content:center;z-index:999}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:40px 36px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.08);text-align:center}
+.login-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.login-logo span{color:var(--rose);font-style:italic}
+.login-tag{font-size:0.7rem;color:var(--ink3);margin-bottom:28px;letter-spacing:0.06em;text-transform:uppercase}
+.login-h{font-size:0.9rem;font-weight:700;color:var(--ink);margin-bottom:20px}
+.lf{margin-bottom:14px;text-align:left}
+.lf label{font-size:0.75rem;font-weight:600;color:var(--ink2);margin-bottom:6px;display:block}
+.lf input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:0.88rem;color:var(--ink);outline:none;transition:border-color .2s}
+.lf input:focus{border-color:var(--rose)}
+.btn-masuk{width:100%;padding:13px;background:var(--rose);color:#fff;border:none;border-radius:var(--rsm);font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:6px}
+.btn-masuk:hover{background:var(--rose-h)}
+.login-err{font-size:.75rem;color:var(--rose);margin-top:10px;display:none}
+.login-note{font-size:.7rem;color:var(--ink3);margin-top:14px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sid);flex-shrink:0;background:var(--ink);min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo-main{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.2}
+.sb-logo-main span{color:var(--rose);font-style:italic}
+.sb-logo-sub{font-size:.6rem;color:rgba(255,255,255,.3);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+.sb-sec{padding:14px 12px 6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 13px;margin:2px 7px;border-radius:var(--rsm);font-size:.8rem;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;border:none;background:none;width:calc(100% - 14px);text-align:left}
+.sb-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.85)}
+.sb-item.active{background:var(--rose);color:#fff}
+.sb-badge{margin-left:auto;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:100px}
+.sb-item.active .sb-badge{background:rgba(255,255,255,.25);color:#fff}
+.sb-footer{margin-top:auto;padding:14px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-admin{display:flex;align-items:center;gap:9px;padding:7px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:var(--rose);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+.sb-aname{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.75)}
+.sb-arole{font-size:.62rem;color:rgba(255,255,255,.3)}
+.btn-logout{display:flex;align-items:center;gap:7px;padding:8px 13px;margin:3px 7px 0;border-radius:var(--rsm);font-size:.75rem;font-weight:500;color:rgba(255,255,255,.35);cursor:pointer;background:none;border:none;transition:all .2s;width:calc(100% - 14px)}
+.btn-logout:hover{color:var(--rose);background:rgba(200,80,74,.1)}
+
+/* CONTENT */
+.content{margin-left:var(--sid);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 26px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:.95rem;font-weight:700;color:var(--ink)}
+.tb-crumb{font-size:.72rem;color:var(--ink3);margin-top:1px}
+.btn-site{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:var(--rsm);border:1.5px solid var(--border);background:var(--white);font-family:inherit;font-size:.75rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-site:hover{border-color:var(--ink);color:var(--ink)}
+
+.inner{padding:22px 26px 60px;flex:1}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:.68rem;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.stat-val{font-size:1.5rem;font-weight:700;color:var(--ink);line-height:1}
+.stat-sub{font-size:.68rem;color:var(--ink3);margin-top:4px}
+
+/* TABS */
+.tabs-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.tabs-hdr{display:flex;border-bottom:1px solid var(--border);background:var(--snow)}
+.tab-btn{padding:13px 20px;font-size:.82rem;font-weight:600;color:var(--ink2);cursor:pointer;border:none;background:none;font-family:inherit;border-bottom:2.5px solid transparent;transition:all .2s;display:flex;align-items:center;gap:7px;margin-bottom:-1px}
+.tab-btn:hover{color:var(--ink)}
+.tab-btn.active{color:var(--rose);border-bottom-color:var(--rose);background:var(--white)}
+.tab-cnt{background:var(--bg);color:var(--ink3);font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:100px}
+.tab-btn.active .tab-cnt{background:var(--rose-s);color:var(--rose)}
+.tab-panel{display:none;padding:22px}
+.tab-panel.active{display:block}
+
+/* PANEL */
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.panel-title{font-size:.92rem;font-weight:700;color:var(--ink)}
+.panel-sub{font-size:.72rem;color:var(--ink3);margin-top:2px}
+.btn-add{display:flex;align-items:center;gap:6px;padding:9px 16px;background:var(--rose);color:#fff;border:none;border-radius:var(--rsm);font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-add:hover{background:var(--rose-h)}
+
+/* FORM */
+.form-wrap{background:var(--snow);border:1.5px dashed var(--border);border-radius:var(--radius);padding:20px;margin-bottom:22px;display:none}
+.form-title{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fg label{font-size:.72rem;font-weight:600;color:var(--ink2)}
+.fg label span{color:var(--rose)}
+.fg input,.fg select,.fg textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.83rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--rose)}
+.fg textarea{resize:vertical;min-height:75px;line-height:1.5}
+.fg .hint{font-size:.65rem;color:var(--ink3)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.sizes{display:flex;flex-wrap:wrap;gap:7px}
+.sz{padding:5px 13px;border-radius:6px;border:1.5px solid var(--border);font-size:.75rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;background:var(--white);user-select:none}
+.sz:hover{border-color:var(--rose);color:var(--rose)}
+.sz.on{background:var(--rose);border-color:var(--rose);color:#fff}
+.foto-zone{border:2px dashed var(--border);border-radius:var(--rsm);padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);position:relative}
+.foto-zone:hover{border-color:var(--rose);background:var(--rose-s)}
+.foto-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.foto-zone-icon{font-size:1.8rem;margin-bottom:5px}
+.foto-zone-txt{font-size:.75rem;font-weight:600;color:var(--ink2)}
+.foto-zone-hint{font-size:.65rem;color:var(--ink3);margin-top:2px}
+.foto-prev{display:none;align-items:center;gap:10px;background:var(--snow);border:1px solid var(--border);border-radius:var(--rsm);padding:10px}
+.foto-prev.show{display:flex}
+.foto-prev-img{width:50px;height:65px;object-fit:cover;border-radius:5px;border:1px solid var(--border)}
+.foto-prev-name{font-size:.78rem;font-weight:600;color:var(--ink)}
+.foto-prev-size{font-size:.65rem;color:var(--ink3)}
+.btn-foto-rm{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:1rem;margin-left:auto;transition:color .2s}
+.btn-foto-rm:hover{color:var(--rose)}
+.form-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.btn-cancel{padding:8px 16px;background:var(--white);color:var(--ink2);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:border-color .2s}
+.btn-cancel:hover{border-color:var(--ink)}
+.btn-save{padding:8px 18px;background:var(--rose);color:#fff;border:none;border-radius:var(--rsm);font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-save:hover{background:var(--rose-h)}
+.btn-save:disabled{background:#ccc;cursor:not-allowed}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:var(--rsm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead{background:var(--snow)}
+th{padding:10px 13px;text-align:left;font-size:.67rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:12px 13px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.td-img{width:38px;height:50px;object-fit:cover;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden;flex-shrink:0}
+.td-name{font-weight:600;color:var(--ink);margin-bottom:2px}
+.td-cat{display:inline-block;font-size:.62rem;font-weight:600;background:var(--bg);color:var(--ink3);padding:2px 7px;border-radius:4px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:100px}
+.badge.on{background:var(--green-s);color:var(--green)}
+.badge.off{background:var(--bg);color:var(--ink3)}
+.badge .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.sz-tags{display:flex;gap:3px;flex-wrap:wrap}
+.sz-tag{font-size:.62rem;font-weight:600;background:var(--bg);color:var(--ink2);padding:2px 6px;border-radius:4px}
+.pjg{font-size:.82rem;font-weight:700;color:var(--ink)}
+.pjg span{font-size:.68rem;color:var(--ink3);font-weight:400}
+.td-acts{display:flex;gap:5px}
+.btn-e,.btn-d,.btn-tog{padding:5px 11px;border-radius:6px;font-family:inherit;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--border);background:var(--white);color:var(--ink2)}
+.btn-e:hover{border-color:var(--rose);color:var(--rose)}
+.btn-d:hover{border-color:#c0392b;color:#c0392b;background:#fdf0f0}
+.btn-tog:hover{border-color:var(--green);color:var(--green)}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--ink3)}
+.empty-icon{font-size:2.5rem;margin-bottom:10px}
+.empty-txt{font-size:.85rem;font-weight:600;color:var(--ink2);margin-bottom:4px}
+.empty-sub{font-size:.72rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--rsm);font-size:.8rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--rose)}
+
+@media(max-width:900px){
+  .sidebar{display:none}.content{margin-left:0}
+  .stats{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .inner{padding:14px 12px 40px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">Hijab <span>Mamah Icis</span></div>
+    <div class="login-tag">Spesialis Pakaian Kerja Sehari-hari</div>
+    <div class="login-h">🔒 Masuk ke Dashboard Admin</div>
+    <div class="lf">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="admin@hijabmamahicis.com"/>
+    </div>
+    <div class="lf">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-masuk" onclick="doLogin()">Masuk →</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-note">Halaman ini hanya untuk admin Hijab Mamah Icis</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-main">Hijab <span>Mamah Icis</span></div>
+    <div class="sb-logo-sub">Admin Dashboard</div>
+  </div>
+  <div class="sb-sec">Kelola Produk</div>
+  <button class="sb-item active" id="sb-atasan" onclick="switchTab('atasan')">
+    <span>👔</span> Atasan <span class="sb-badge" id="cnt-atasan">0</span>
+  </button>
+  <button class="sb-item" id="sb-bawahan" onclick="switchTab('bawahan')">
+    <span>👖</span> Bawahan <span class="sb-badge" id="cnt-bawahan">0</span>
+  </button>
+  <button class="sb-item" id="sb-suasana" onclick="switchTab('suasana')">
+    <span>🏙️</span> Suasana <span class="sb-badge" id="cnt-suasana">0</span>
+  </button>
+  <div class="sb-footer">
+    <div class="sb-admin">
+      <div class="sb-av">M</div>
+      <div>
+        <div class="sb-aname" id="adminEmail">Admin</div>
+        <div class="sb-arole">Administrator</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">↩ Keluar</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <div class="topbar">
+    <div>
+      <div class="tb-title" id="pageTitle">Kelola Atasan</div>
+      <div class="tb-crumb" id="pageCrumb">Produk → Atasan</div>
+    </div>
+    <a href="index.html" class="btn-site" target="_blank">🌐 Lihat Website</a>
+  </div>
+
+  <div class="inner">
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat"><div class="stat-lbl">Total Atasan</div><div class="stat-val" id="st-atasan">0</div><div class="stat-sub" id="st-atasan-sub">—</div></div>
+      <div class="stat"><div class="stat-lbl">Total Bawahan</div><div class="stat-val" id="st-bawahan">0</div><div class="stat-sub" id="st-bawahan-sub">—</div></div>
+      <div class="stat"><div class="stat-lbl">Suasana</div><div class="stat-val" id="st-suasana">0</div><div class="stat-sub">Pilihan latar</div></div>
+      <div class="stat"><div class="stat-lbl">Total Produk</div><div class="stat-val" id="st-total">0</div><div class="stat-sub">Atasan + Bawahan</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-wrap">
+      <div class="tabs-hdr">
+        <button class="tab-btn active" id="tab-atasan" onclick="switchTab('atasan')">👔 Atasan <span class="tab-cnt" id="tc-atasan">0</span></button>
+        <button class="tab-btn" id="tab-bawahan" onclick="switchTab('bawahan')">👖 Bawahan <span class="tab-cnt" id="tc-bawahan">0</span></button>
+        <button class="tab-btn" id="tab-suasana" onclick="switchTab('suasana')">🏙️ Suasana <span class="tab-cnt" id="tc-suasana">0</span></button>
+      </div>
+
+      <!-- TAB ATASAN -->
+      <div class="tab-panel active" id="panel-atasan">
+        <div class="panel-hdr">
+          <div><div class="panel-title">Produk Atasan</div><div class="panel-sub">Kemeja, tunik, gamis, blouse, outer, one set</div></div>
+          <button class="btn-add" onclick="openForm('atasan')">+ Tambah Atasan</button>
+        </div>
+        <div class="form-wrap" id="form-atasan">
+          <div class="form-title">📝 <span id="form-atasan-title">Tambah Produk Atasan</span></div>
+          <input type="hidden" id="atasan-edit-id"/>
+          <div class="form-grid">
+            <div class="full">
+              <div class="fg"><label>Foto Produk <span>*</span></label>
+                <div class="foto-zone" id="fz-atasan">
+                  <input type="file" id="fi-atasan" accept="image/*" onchange="previewFoto('atasan',this)"/>
+                  <div class="foto-zone-icon">📷</div>
+                  <div class="foto-zone-txt">Klik untuk upload foto</div>
+                  <div class="foto-zone-hint">JPG, PNG · Maks 3MB · Rasio 3:4 disarankan</div>
+                </div>
+                <div class="foto-prev" id="fp-atasan">
+                  <img class="foto-prev-img" id="fpi-atasan" src="" alt=""/>
+                  <div><div class="foto-prev-name" id="fpn-atasan">—</div><div class="foto-prev-size" id="fps-atasan">—</div></div>
+                  <button class="btn-foto-rm" onclick="removeFoto('atasan')">✕</button>
+                </div>
+              </div>
+            </div>
+            <div class="fg"><label>Nama Produk <span>*</span></label><input type="text" id="a-nama" placeholder="cth: Kemeja Batik Parang Modern"/></div>
+            <div class="fg"><label>Kategori <span>*</span></label>
+              <select id="a-kategori">
+                <option value="">— Pilih —</option>
+                <option>Kemeja</option><option>Tunik</option><option>Gamis</option>
+                <option>Blouse</option><option>Outer / Blazer</option><option>One Set</option>
+              </select>
+            </div>
+            <div class="fg"><label>Harga (Rp) <span>*</span></label><input type="number" id="a-harga" placeholder="185000"/></div>
+            <div class="fg"><label>Panjang Baju (cm) <span>*</span></label><input type="number" id="a-panjang" placeholder="72" min="30" max="150"/><div class="hint">Dipakai AI untuk proporsi tinggi badan</div></div>
+            <div class="full fg"><label>Ukuran Tersedia <span>*</span></label>
+              <div class="sizes" id="sz-atasan">
+                <div class="sz" onclick="toggleSz(this)">S</div><div class="sz" onclick="toggleSz(this)">M</div>
+                <div class="sz" onclick="toggleSz(this)">L</div><div class="sz" onclick="toggleSz(this)">XL</div>
+                <div class="sz" onclick="toggleSz(this)">XXL</div><div class="sz" onclick="toggleSz(this)">XXXL</div>
+              </div>
+            </div>
+            <div class="full fg"><label>Link Shopee</label><input type="url" id="a-shopee" placeholder="https://shopee.co.id/..."/><div class="hint">Opsional — untuk tombol checkout di halaman user</div></div>
+            <div class="full fg"><label>Deskripsi untuk AI <span>*</span></label>
+              <textarea id="a-deskripsi" placeholder="cth: kemeja batik motif parang warna biru dan putih, bahan katun, lengan panjang, kerah formal..."></textarea>
+              <div class="hint">Semakin detail → hasil virtual try-on semakin akurat</div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="closeForm('atasan')">Batal</button>
+            <button class="btn-save" id="btn-save-atasan" onclick="saveAtasan()">💾 Simpan</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Foto</th><th>Produk</th><th>Harga</th><th>Panjang</th><th>Ukuran</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tbody-atasan"><tr><td colspan="7"><div class="empty"><div class="empty-icon">👔</div><div class="empty-txt">Belum ada produk atasan</div><div class="empty-sub">Klik "+ Tambah Atasan" untuk mulai</div></div></td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- TAB BAWAHAN -->
+      <div class="tab-panel" id="panel-bawahan">
+        <div class="panel-hdr">
+          <div><div class="panel-title">Produk Bawahan</div><div class="panel-sub">Celana, rok, jeans — koleksi terpisah</div></div>
+          <button class="btn-add" onclick="openForm('bawahan')">+ Tambah Bawahan</button>
+        </div>
+        <div class="form-wrap" id="form-bawahan">
+          <div class="form-title">📝 <span id="form-bawahan-title">Tambah Produk Bawahan</span></div>
+          <input type="hidden" id="bawahan-edit-id"/>
+          <div class="form-grid">
+            <div class="full">
+              <div class="fg"><label>Foto Produk <span>*</span></label>
+                <div class="foto-zone" id="fz-bawahan">
+                  <input type="file" id="fi-bawahan" accept="image/*" onchange="previewFoto('bawahan',this)"/>
+                  <div class="foto-zone-icon">📷</div>
+                  <div class="foto-zone-txt">Klik untuk upload foto</div>
+                  <div class="foto-zone-hint">JPG, PNG · Maks 3MB</div>
+                </div>
+                <div class="foto-prev" id="fp-bawahan">
+                  <img class="foto-prev-img" id="fpi-bawahan" src="" alt=""/>
+                  <div><div class="foto-prev-name" id="fpn-bawahan">—</div><div class="foto-prev-size" id="fps-bawahan">—</div></div>
+                  <button class="btn-foto-rm" onclick="removeFoto('bawahan')">✕</button>
+                </div>
+              </div>
+            </div>
+            <div class="fg"><label>Nama Produk <span>*</span></label><input type="text" id="b-nama" placeholder="cth: Celana Kulot Hitam"/></div>
+            <div class="fg"><label>Kategori <span>*</span></label>
+              <select id="b-kategori">
+                <option value="">— Pilih —</option>
+                <option>Celana Kulot</option><option>Celana Kain</option><option>Jeans</option>
+                <option>Rok Midi</option><option>Rok Maxi</option><option>Rok Plisket</option><option>Rok Batik</option>
+              </select>
+            </div>
+            <div class="fg"><label>Harga (Rp) <span>*</span></label><input type="number" id="b-harga" placeholder="145000"/></div>
+            <div class="fg"><label>Panjang Bawahan (cm) <span>*</span></label><input type="number" id="b-panjang" placeholder="95" min="30" max="130"/><div class="hint">Dipakai AI untuk proporsi</div></div>
+            <div class="full fg"><label>Ukuran Tersedia <span>*</span></label>
+              <div class="sizes" id="sz-bawahan">
+                <div class="sz" onclick="toggleSz(this)">S</div><div class="sz" onclick="toggleSz(this)">M</div>
+                <div class="sz" onclick="toggleSz(this)">L</div><div class="sz" onclick="toggleSz(this)">XL</div>
+                <div class="sz" onclick="toggleSz(this)">XXL</div><div class="sz" onclick="toggleSz(this)">XXXL</div>
+              </div>
+            </div>
+            <div class="full fg"><label>Link Shopee</label><input type="url" id="b-shopee" placeholder="https://shopee.co.id/..."/><div class="hint">Opsional — untuk tombol checkout</div></div>
+            <div class="full fg"><label>Deskripsi untuk AI <span>*</span></label>
+              <textarea id="b-deskripsi" placeholder="cth: celana kulot hitam bahan crepe, potongan lurus, panjang 95cm..."></textarea>
+              <div class="hint">Deskripsi ini dipakai AI saat generate paduan bawahan</div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="closeForm('bawahan')">Batal</button>
+            <button class="btn-save" id="btn-save-bawahan" onclick="saveBawahan()">💾 Simpan</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Foto</th><th>Produk</th><th>Harga</th><th>Panjang</th><th>Ukuran</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tbody-bawahan"><tr><td colspan="7"><div class="empty"><div class="empty-icon">👖</div><div class="empty-txt">Belum ada produk bawahan</div><div class="empty-sub">Klik "+ Tambah Bawahan" untuk mulai</div></div></td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- TAB SUASANA -->
+      <div class="tab-panel" id="panel-suasana">
+        <div class="panel-hdr">
+          <div><div class="panel-title">Kelola Suasana</div><div class="panel-sub">Latar belakang · tidak perlu foto, AI yang render</div></div>
+          <button class="btn-add" onclick="openForm('suasana')">+ Tambah Suasana</button>
+        </div>
+        <div class="form-wrap" id="form-suasana">
+          <div class="form-title">📝 <span id="form-suasana-title">Tambah Suasana</span></div>
+          <input type="hidden" id="suasana-edit-id"/>
+          <div class="form-grid">
+            <div class="fg"><label>Nama Suasana <span>*</span></label><input type="text" id="s-nama" placeholder="cth: Kantor Modern"/></div>
+            <div class="fg"><label>Icon Emoji <span>*</span></label><input type="text" id="s-icon" placeholder="🏢" maxlength="4"/><div class="hint">Satu emoji sebagai ikon</div></div>
+            <div class="full fg"><label>Deskripsi untuk AI <span>*</span></label>
+              <textarea id="s-deskripsi" placeholder="cth: di dalam kantor modern dengan meja kerja, dinding kaca, pencahayaan profesional, suasana formal..."></textarea>
+              <div class="hint">Deskripsi ini yang dikirim ke AI — tidak perlu foto</div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="closeForm('suasana')">Batal</button>
+            <button class="btn-save" id="btn-save-suasana" onclick="saveSuasana()">💾 Simpan</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Icon</th><th>Nama</th><th>Deskripsi AI</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tbody-suasana"><tr><td colspan="5"><div class="empty"><div class="empty-icon">🏙️</div><div class="empty-txt">Belum ada suasana</div><div class="empty-sub">Klik "+ Tambah Suasana" untuk mulai</div></div></td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE + CLOUDINARY -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC_yqfJEVZJ0nboQAVDrVqimrNDfLIE3q4",
+  authDomain: "hijab-mamah-icis.firebaseapp.com",
+  projectId: "hijab-mamah-icis",
+  storageBucket: "hijab-mamah-icis.firebasestorage.app",
+  messagingSenderId: "624533718968",
+  appId: "1:624533718968:web:8bfe5ce893e830fb87f14d"
+};
+
+const CLOUD_NAME = "dux0q9dbu";
+const UPLOAD_PRESET = "hijab-mamah-icis";
+const NO_BAWAHAN_CATS = ["Gamis","One Set"];
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminEmail').textContent = user.email.split('@')[0];
+    loadAll();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+});
+
+// ── LOGIN / LOGOUT ──
+window.doLogin = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    err.style.display = 'block';
+    err.textContent = 'Email atau password salah. Coba lagi.';
+  }
+};
+
+window.doLogout = async () => {
+  await signOut(auth);
+};
+
+// ── CLOUDINARY UPLOAD ──
+async function uploadToCloudinary(file) {
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  fd.append('folder', 'hijab-mamah-icis');
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method:'POST', body:fd });
+  const data = await res.json();
+  if (!data.secure_url) throw new Error('Upload foto gagal');
+  return data.secure_url;
+}
+
+// ── FOTO PREVIEW ──
+window.previewFoto = (type, input) => {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById(`fz-${type}`).style.display = 'none';
+    const fp = document.getElementById(`fp-${type}`);
+    fp.classList.add('show');
+    document.getElementById(`fpi-${type}`).src = e.target.result;
+    document.getElementById(`fpn-${type}`).textContent = file.name;
+    document.getElementById(`fps-${type}`).textContent = (file.size/1024).toFixed(0)+' KB';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removeFoto = type => {
+  document.getElementById(`fi-${type}`).value = '';
+  document.getElementById(`fz-${type}`).style.display = '';
+  document.getElementById(`fp-${type}`).classList.remove('show');
+};
+
+// ── SIZE TOGGLE ──
+window.toggleSz = el => el.classList.toggle('on');
+
+function getSizes(containerId) {
+  return Array.from(document.querySelectorAll(`#${containerId} .sz.on`)).map(e => e.textContent);
+}
+function setSizes(containerId, sizes) {
+  document.querySelectorAll(`#${containerId} .sz`).forEach(el => {
+    el.classList.toggle('on', sizes.includes(el.textContent));
+  });
+}
+
+// ── TABS ──
+window.switchTab = tab => {
+  ['atasan','bawahan','suasana'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===tab);
+    document.getElementById(`panel-${t}`).classList.toggle('active', t===tab);
+    document.getElementById(`sb-${t}`).classList.toggle('active', t===tab);
+  });
+  const titles = {atasan:'Kelola Atasan',bawahan:'Kelola Bawahan',suasana:'Kelola Suasana'};
+  const crumbs = {atasan:'Produk → Atasan',bawahan:'Produk → Bawahan',suasana:'Produk → Suasana'};
+  document.getElementById('pageTitle').textContent = titles[tab];
+  document.getElementById('pageCrumb').textContent = crumbs[tab];
+};
+
+// ── FORMS ──
+window.openForm = type => {
+  closeForm('atasan'); closeForm('bawahan'); closeForm('suasana');
+  const fw = document.getElementById(`form-${type}`);
+  fw.style.display = 'block';
+  fw.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.closeForm = type => {
+  document.getElementById(`form-${type}`).style.display = 'none';
+  resetForm(type);
+};
+
+function resetForm(type) {
+  if (type==='atasan') {
+    ['a-nama','a-harga','a-panjang','a-shopee','a-deskripsi'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('a-kategori').value='';
+    document.getElementById('atasan-edit-id').value='';
+    setSizes('sz-atasan',[]);
+    removeFoto('atasan');
+    document.getElementById('form-atasan-title').textContent='Tambah Produk Atasan';
+  } else if (type==='bawahan') {
+    ['b-nama','b-harga','b-panjang','b-shopee','b-deskripsi'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('b-kategori').value='';
+    document.getElementById('bawahan-edit-id').value='';
+    setSizes('sz-bawahan',[]);
+    removeFoto('bawahan');
+    document.getElementById('form-bawahan-title').textContent='Tambah Produk Bawahan';
+  } else if (type==='suasana') {
+    ['s-nama','s-icon','s-deskripsi'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('suasana-edit-id').value='';
+    document.getElementById('form-suasana-title').textContent='Tambah Suasana';
+  }
+}
+
+// ── TOAST ──
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.className='toast', 3000);
+}
+
+// ── FORMAT HARGA ──
+function fmtHarga(n) {
+  return 'Rp '+Number(n).toLocaleString('id-ID');
+}
+
+// ── LOAD ALL ──
+async function loadAll() {
+  await Promise.all([loadAtasan(), loadBawahan(), loadSuasana()]);
+}
+
+// ══════════════════════════════
+// ATASAN
+// ══════════════════════════════
+async function loadAtasan() {
+  const q = query(collection(db,'koleksi_atasan'), orderBy('nama'));
+  const snap = await getDocs(q);
+  const rows = [];
+  snap.forEach(d => rows.push({id:d.id,...d.data()}));
+  renderAtasan(rows);
+}
+
+function renderAtasan(rows) {
+  const aktif = rows.filter(r=>r.aktif!==false).length;
+  document.getElementById('cnt-atasan').textContent = rows.length;
+  document.getElementById('tc-atasan').textContent = rows.length;
+  document.getElementById('st-atasan').textContent = rows.length;
+  document.getElementById('st-atasan-sub').textContent = `${aktif} aktif · ${rows.length-aktif} nonaktif`;
+  document.getElementById('st-total').textContent = rows.length + parseInt(document.getElementById('st-bawahan').textContent||0);
+
+  const tbody = document.getElementById('tbody-atasan');
+  if (!rows.length) {
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="empty-icon">👔</div><div class="empty-txt">Belum ada produk atasan</div><div class="empty-sub">Klik "+ Tambah Atasan" untuk mulai</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><div class="td-img">${r.foto_url?`<img src="${r.foto_url}" style="width:100%;height:100%;object-fit:cover"/>`:r.kategori==='Gamis'?'👗':r.kategori==='One Set'?'👘':'👔'}</div></td>
+      <td><div class="td-name">${r.nama}</div><span class="td-cat">${r.kategori}</span></td>
+      <td>${fmtHarga(r.harga)}</td>
+      <td><span class="pjg">${r.panjang_baju}<span> cm</span></span></td>
+      <td><div class="sz-tags">${(r.size||[]).map(s=>`<span class="sz-tag">${s}</span>`).join('')}</div></td>
+      <td><span class="badge ${r.aktif!==false?'on':'off'}"><span class="dot"></span>${r.aktif!==false?'Aktif':'Nonaktif'}</span></td>
+      <td><div class="td-acts">
+        <button class="btn-e" onclick="editAtasan('${r.id}')">✏️</button>
+        <button class="btn-tog" onclick="toggleAtasan('${r.id}',${r.aktif!==false})">${r.aktif!==false?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="btn-d" onclick="deleteAtasan('${r.id}')">🗑️</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+window.saveAtasan = async () => {
+  const nama = document.getElementById('a-nama').value.trim();
+  const kat = document.getElementById('a-kategori').value;
+  const harga = document.getElementById('a-harga').value;
+  const panjang = document.getElementById('a-panjang').value;
+  const shopee = document.getElementById('a-shopee').value.trim();
+  const desk = document.getElementById('a-deskripsi').value.trim();
+  const sizes = getSizes('sz-atasan');
+  const editId = document.getElementById('atasan-edit-id').value;
+  const fileInput = document.getElementById('fi-atasan');
+
+  if (!nama||!kat||!harga||!panjang||!desk||!sizes.length) { toast('Lengkapi semua field wajib','err'); return; }
+
+  const btn = document.getElementById('btn-save-atasan');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  try {
+    let foto_url = '';
+    if (fileInput.files[0]) {
+      foto_url = await uploadToCloudinary(fileInput.files[0]);
+    }
+
+    const data = {
+      nama, kategori:kat,
+      harga:parseInt(harga),
+      panjang_baju:parseInt(panjang),
+      size:sizes,
+      deskripsi_ai:desk,
+      butuh_bawahan: !NO_BAWAHAN_CATS.includes(kat),
+      aktif:true,
+      ...(shopee && {link_shopee:shopee}),
+      ...(foto_url && {foto_url}),
+      updated_at: new Date()
+    };
+
+    if (editId) {
+      if (!foto_url) delete data.foto_url;
+      await updateDoc(doc(db,'koleksi_atasan',editId), data);
+      toast('✅ Produk berhasil diperbarui!');
+    } else {
+      data.created_at = new Date();
+      await addDoc(collection(db,'koleksi_atasan'), data);
+      toast('✅ Produk berhasil ditambahkan!');
+    }
+    closeForm('atasan');
+    await loadAtasan();
+  } catch(e) {
+    toast('Gagal menyimpan: '+e.message,'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Simpan';
+  }
+};
+
+window.editAtasan = async id => {
+  const snap = await getDocs(collection(db,'koleksi_atasan'));
+  const d = snap.docs.find(x=>x.id===id);
+  if (!d) return;
+  const r = d.data();
+  openForm('atasan');
+  document.getElementById('form-atasan-title').textContent = 'Edit Produk Atasan';
+  document.getElementById('atasan-edit-id').value = id;
+  document.getElementById('a-nama').value = r.nama||'';
+  document.getElementById('a-kategori').value = r.kategori||'';
+  document.getElementById('a-harga').value = r.harga||'';
+  document.getElementById('a-panjang').value = r.panjang_baju||'';
+  document.getElementById('a-shopee').value = r.link_shopee||'';
+  document.getElementById('a-deskripsi').value = r.deskripsi_ai||'';
+  setSizes('sz-atasan', r.size||[]);
+  if (r.foto_url) {
+    document.getElementById('fz-atasan').style.display='none';
+    const fp=document.getElementById('fp-atasan'); fp.classList.add('show');
+    document.getElementById('fpi-atasan').src=r.foto_url;
+    document.getElementById('fpn-atasan').textContent='Foto tersimpan';
+    document.getElementById('fps-atasan').textContent='Ganti dengan upload baru jika perlu';
+  }
+};
+
+window.toggleAtasan = async (id, isAktif) => {
+  await updateDoc(doc(db,'koleksi_atasan',id), {aktif:!isAktif});
+  toast(isAktif?'Produk dinonaktifkan':'Produk diaktifkan');
+  await loadAtasan();
+};
+
+window.deleteAtasan = async id => {
+  if (!confirm('Yakin hapus produk ini?')) return;
+  await deleteDoc(doc(db,'koleksi_atasan',id));
+  toast('Produk dihapus');
+  await loadAtasan();
+};
+
+// ══════════════════════════════
+// BAWAHAN
+// ══════════════════════════════
+async function loadBawahan() {
+  const q = query(collection(db,'koleksi_bawahan'), orderBy('nama'));
+  const snap = await getDocs(q);
+  const rows = [];
+  snap.forEach(d => rows.push({id:d.id,...d.data()}));
+  renderBawahan(rows);
+}
+
+function renderBawahan(rows) {
+  const aktif = rows.filter(r=>r.aktif!==false).length;
+  document.getElementById('cnt-bawahan').textContent = rows.length;
+  document.getElementById('tc-bawahan').textContent = rows.length;
+  document.getElementById('st-bawahan').textContent = rows.length;
+  document.getElementById('st-bawahan-sub').textContent = `${aktif} aktif`;
+  document.getElementById('st-total').textContent =
+    parseInt(document.getElementById('st-atasan').textContent||0) + rows.length;
+
+  const tbody = document.getElementById('tbody-bawahan');
+  if (!rows.length) {
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="empty-icon">👖</div><div class="empty-txt">Belum ada produk bawahan</div><div class="empty-sub">Klik "+ Tambah Bawahan" untuk mulai</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><div class="td-img">${r.foto_url?`<img src="${r.foto_url}" style="width:100%;height:100%;object-fit:cover"/>`:r.kategori?.includes('Rok')?'👗':'👖'}</div></td>
+      <td><div class="td-name">${r.nama}</div><span class="td-cat">${r.kategori}</span></td>
+      <td>${fmtHarga(r.harga)}</td>
+      <td><span class="pjg">${r.panjang_baju}<span> cm</span></span></td>
+      <td><div class="sz-tags">${(r.size||[]).map(s=>`<span class="sz-tag">${s}</span>`).join('')}</div></td>
+      <td><span class="badge ${r.aktif!==false?'on':'off'}"><span class="dot"></span>${r.aktif!==false?'Aktif':'Nonaktif'}</span></td>
+      <td><div class="td-acts">
+        <button class="btn-e" onclick="editBawahan('${r.id}')">✏️</button>
+        <button class="btn-tog" onclick="toggleBawahan('${r.id}',${r.aktif!==false})">${r.aktif!==false?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="btn-d" onclick="deleteBawahan('${r.id}')">🗑️</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+window.saveBawahan = async () => {
+  const nama = document.getElementById('b-nama').value.trim();
+  const kat = document.getElementById('b-kategori').value;
+  const harga = document.getElementById('b-harga').value;
+  const panjang = document.getElementById('b-panjang').value;
+  const shopee = document.getElementById('b-shopee').value.trim();
+  const desk = document.getElementById('b-deskripsi').value.trim();
+  const sizes = getSizes('sz-bawahan');
+  const editId = document.getElementById('bawahan-edit-id').value;
+  const fileInput = document.getElementById('fi-bawahan');
+
+  if (!nama||!kat||!harga||!panjang||!desk||!sizes.length) { toast('Lengkapi semua field wajib','err'); return; }
+
+  const btn = document.getElementById('btn-save-bawahan');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  try {
+    let foto_url = '';
+    if (fileInput.files[0]) foto_url = await uploadToCloudinary(fileInput.files[0]);
+
+    const data = {
+      nama, kategori:kat,
+      harga:parseInt(harga),
+      panjang_baju:parseInt(panjang),
+      size:sizes,
+      deskripsi_ai:desk,
+      aktif:true,
+      ...(shopee && {link_shopee:shopee}),
+      ...(foto_url && {foto_url}),
+      updated_at: new Date()
+    };
+
+    if (editId) {
+      if (!foto_url) delete data.foto_url;
+      await updateDoc(doc(db,'koleksi_bawahan',editId), data);
+      toast('✅ Bawahan berhasil diperbarui!');
+    } else {
+      data.created_at = new Date();
+      await addDoc(collection(db,'koleksi_bawahan'), data);
+      toast('✅ Bawahan berhasil ditambahkan!');
+    }
+    closeForm('bawahan');
+    await loadBawahan();
+  } catch(e) {
+    toast('Gagal menyimpan: '+e.message,'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Simpan';
+  }
+};
+
+window.editBawahan = async id => {
+  const snap = await getDocs(collection(db,'koleksi_bawahan'));
+  const d = snap.docs.find(x=>x.id===id);
+  if (!d) return;
+  const r = d.data();
+  openForm('bawahan');
+  document.getElementById('form-bawahan-title').textContent = 'Edit Produk Bawahan';
+  document.getElementById('bawahan-edit-id').value = id;
+  document.getElementById('b-nama').value = r.nama||'';
+  document.getElementById('b-kategori').value = r.kategori||'';
+  document.getElementById('b-harga').value = r.harga||'';
+  document.getElementById('b-panjang').value = r.panjang_baju||'';
+  document.getElementById('b-shopee').value = r.link_shopee||'';
+  document.getElementById('b-deskripsi').value = r.deskripsi_ai||'';
+  setSizes('sz-bawahan', r.size||[]);
+  if (r.foto_url) {
+    document.getElementById('fz-bawahan').style.display='none';
+    const fp=document.getElementById('fp-bawahan'); fp.classList.add('show');
+    document.getElementById('fpi-bawahan').src=r.foto_url;
+    document.getElementById('fpn-bawahan').textContent='Foto tersimpan';
+    document.getElementById('fps-bawahan').textContent='Ganti dengan upload baru jika perlu';
+  }
+};
+
+window.toggleBawahan = async (id, isAktif) => {
+  await updateDoc(doc(db,'koleksi_bawahan',id), {aktif:!isAktif});
+  toast(isAktif?'Produk dinonaktifkan':'Produk diaktifkan');
+  await loadBawahan();
+};
+
+window.deleteBawahan = async id => {
+  if (!confirm('Yakin hapus produk ini?')) return;
+  await deleteDoc(doc(db,'koleksi_bawahan',id));
+  toast('Produk dihapus');
+  await loadBawahan();
+};
+
+// ══════════════════════════════
+// SUASANA
+// ══════════════════════════════
+async function loadSuasana() {
+  const q = query(collection(db,'koleksi_suasana'), orderBy('nama'));
+  const snap = await getDocs(q);
+  const rows = [];
+  snap.forEach(d => rows.push({id:d.id,...d.data()}));
+  renderSuasana(rows);
+}
+
+function renderSuasana(rows) {
+  document.getElementById('cnt-suasana').textContent = rows.length;
+  document.getElementById('tc-suasana').textContent = rows.length;
+  document.getElementById('st-suasana').textContent = rows.length;
+
+  const tbody = document.getElementById('tbody-suasana');
+  if (!rows.length) {
+    tbody.innerHTML=`<tr><td colspan="5"><div class="empty"><div class="empty-icon">🏙️</div><div class="empty-txt">Belum ada suasana</div><div class="empty-sub">Klik "+ Tambah Suasana" untuk mulai</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>`
+    <tr>
+      <td style="font-size:1.5rem">${r.icon||'🌆'}</td>
+      <td><div class="td-name">${r.nama}</div></td>
+      <td style="font-size:.75rem;color:var(--ink2);max-width:280px">${r.deskripsi_ai}</td>
+      <td><span class="badge ${r.aktif!==false?'on':'off'}"><span class="dot"></span>${r.aktif!==false?'Aktif':'Nonaktif'}</span></td>
+      <td><div class="td-acts">
+        <button class="btn-e" onclick="editSuasana('${r.id}')">✏️</button>
+        <button class="btn-tog" onclick="toggleSuasana('${r.id}',${r.aktif!==false})">${r.aktif!==false?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="btn-d" onclick="deleteSuasana('${r.id}')">🗑️</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+window.saveSuasana = async () => {
+  const nama = document.getElementById('s-nama').value.trim();
+  const icon = document.getElementById('s-icon').value.trim();
+  const desk = document.getElementById('s-deskripsi').value.trim();
+  const editId = document.getElementById('suasana-edit-id').value;
+
+  if (!nama||!icon||!desk) { toast('Lengkapi semua field','err'); return; }
+
+  const btn = document.getElementById('btn-save-suasana');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  try {
+    const data = { nama, icon, deskripsi_ai:desk, aktif:true, updated_at:new Date() };
+    if (editId) {
+      await updateDoc(doc(db,'koleksi_suasana',editId), data);
+      toast('✅ Suasana diperbarui!');
+    } else {
+      data.created_at = new Date();
+      await addDoc(collection(db,'koleksi_suasana'), data);
+      toast('✅ Suasana ditambahkan!');
+    }
+    closeForm('suasana');
+    await loadSuasana();
+  } catch(e) {
+    toast('Gagal: '+e.message,'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Simpan';
+  }
+};
+
+window.editSuasana = async id => {
+  const snap = await getDocs(collection(db,'koleksi_suasana'));
+  const d = snap.docs.find(x=>x.id===id);
+  if (!d) return;
+  const r = d.data();
+  openForm('suasana');
+  document.getElementById('form-suasana-title').textContent = 'Edit Suasana';
+  document.getElementById('suasana-edit-id').value = id;
+  document.getElementById('s-nama').value = r.nama||'';
+  document.getElementById('s-icon').value = r.icon||'';
+  document.getElementById('s-deskripsi').value = r.deskripsi_ai||'';
+};
+
+window.toggleSuasana = async (id, isAktif) => {
+  await updateDoc(doc(db,'koleksi_suasana',id), {aktif:!isAktif});
+  toast(isAktif?'Suasana dinonaktifkan':'Suasana diaktifkan');
+  await loadSuasana();
+};
+
+window.deleteSuasana = async id => {
+  if (!confirm('Yakin hapus suasana ini?')) return;
+  await deleteDoc(doc(db,'koleksi_suasana',id));
+  toast('Suasana dihapus');
+  await loadSuasana();
+};
+
+// expose for non-module buttons already wired above
+window.openForm = window.openForm;
+window.closeForm = window.closeForm;
+</script>
+</body>
+</html>
