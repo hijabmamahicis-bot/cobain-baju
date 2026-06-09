@@ -416,7 +416,7 @@ window.doGenerate = async () => {
     const prompt = buildPrompt();
 
     const res = await fetch(
-      'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0',
+      'https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0',
       {
         method: 'POST',
         headers: {
@@ -589,12 +589,7 @@ window.selectAtasan = id => {
 window.selectBawahan = id => {
   state.bawahan = allBawahan.find(b=>b.id===id);
   document.querySelectorAll('.bc').forEach(el => el.classList.toggle('selected', el.dataset.id===id));
-  // Reset val row 4 to normal before updating
-  const vr=document.getElementById('v4');
-  const vd=document.getElementById('vd4');
-  vr.className='vr ok';
-  vd.className='vdot ok';
-  vr.innerHTML='<div class="vdot ok"></div>Bawahan dipilih';
+  updateVal(4, true);
   updateBtn();
 };
 
