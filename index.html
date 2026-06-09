@@ -386,7 +386,7 @@ footer span{color:rgba(255,255,255,.55)}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_yqfJEVZJ0nboQAVDrVqimrNDfLIE3q4",
@@ -424,13 +424,13 @@ let allSuasana = [];
 async function loadData() {
   try {
     const [snapA, snapB, snapS] = await Promise.all([
-      getDocs(query(collection(db,'koleksi_atasan'), where('aktif','==',true))),
-      getDocs(query(collection(db,'koleksi_bawahan'), where('aktif','==',true))),
-      getDocs(query(collection(db,'koleksi_suasana'), where('aktif','==',true))),
+      getDocs(collection(db,'koleksi_atasan')),
+      getDocs(collection(db,'koleksi_bawahan')),
+      getDocs(collection(db,'koleksi_suasana')),
     ]);
-    snapA.forEach(d => allAtasan.push({id:d.id,...d.data()}));
-    snapB.forEach(d => allBawahan.push({id:d.id,...d.data()}));
-    snapS.forEach(d => allSuasana.push({id:d.id,...d.data()}));
+    snapA.forEach(d => { const data = d.data(); if(data.aktif !== false) allAtasan.push({id:d.id,...data}); });
+    snapB.forEach(d => { const data = d.data(); if(data.aktif !== false) allBawahan.push({id:d.id,...data}); });
+    snapS.forEach(d => { const data = d.data(); if(data.aktif !== false) allSuasana.push({id:d.id,...data}); });
     renderAtasan(allAtasan);
     renderBawahan(allBawahan);
     renderSuasana(allSuasana);
