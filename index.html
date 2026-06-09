@@ -696,38 +696,41 @@ window.doGenerate = async () => {
   try {
     const prompt = buildPrompt();
 
-    // Start prediction
-    const startRes = await fetch('https://api.replicate.com/v1/models/stability-ai/stable-diffusion-3.5-large/predictions', {
+    // Use Replicate via proxy-friendly endpoint
+    const startRes = await fetch('https://api.replicate.com/v1/predictions', {
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'Authorization':`Bearer ${apiKey}`,
-        'Prefer':'wait'
+        'Authorization':`Token ${apiKey}`
       },
       body:JSON.stringify({
+        version: "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
         input:{
           prompt: prompt,
-          negative_prompt: "low quality, blurry, distorted, extra limbs, bad anatomy, watermark, text, nude, nsfw",
-          aspect_ratio: "9:16",
-          output_format: "webp",
-          output_quality: 80,
-          num_inference_steps: 28,
-          guidance_scale: 4.5
+          negative_prompt: "low quality, blurry, distorted, extra limbs, bad anatomy, watermark, text, nude, nsfw, bad proportions",
+          width: 768,
+          height: 1024,
+          num_inference_steps: 30,
+          guidance_scale: 7.5,
+          scheduler: "DPMSolverMultistep"
         }
       })
     });
 
+    if (!startRes.ok) {
+      const errData = await startRes.json();
+      throw new Error(errData?.detail || 'Gagal memulai generate. Cek API token.');
+    }
+
     const data = await startRes.json();
 
-    if (!startRes.ok) throw new Error(data?.detail || 'Gagal memulai generate');
-
-    // Poll for result if not done yet
+    // Poll for result
     let result = data;
     let attempts = 0;
     while (result.status !== 'succeeded' && result.status !== 'failed' && attempts < 60) {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 2500));
       const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
-        headers:{'Authorization':`Bearer ${apiKey}`}
+        headers:{'Authorization':`Token ${apiKey}`}
       });
       result = await pollRes.json();
       attempts++;
