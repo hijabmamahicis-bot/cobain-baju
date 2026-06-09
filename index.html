@@ -146,6 +146,31 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-txt{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink)}
 .loading-sub{font-size:.75rem;color:var(--ink2);text-align:center;max-width:260px;line-height:1.6}
+/* DEBUG PANEL */
+.dbg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.dbg-box{background:#fff;border-radius:var(--radius);padding:24px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.dbg-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.dbg-subtitle{font-size:.75rem;color:var(--ink3);margin-bottom:18px}
+.dbg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.dbg-item{border:1.5px solid var(--border);border-radius:var(--rsm);overflow:hidden;text-align:center}
+.dbg-label{font-size:.65rem;font-weight:700;color:var(--ink2);padding:7px 8px;background:var(--snow);border-bottom:1px solid var(--border)}
+.dbg-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:var(--bg)}
+.dbg-empty{width:100%;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--bg);color:var(--ink3)}
+.dbg-name{font-size:.68rem;font-weight:600;color:var(--ink);padding:5px 8px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dbg-status{font-size:.65rem;font-weight:600;padding:3px 8px 7px}
+.dbg-status.ok{color:var(--green)}
+.dbg-status.skip{color:var(--ink3)}
+.dbg-status.fail{color:var(--rose)}
+.dbg-prompt{background:var(--snow);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 12px;margin-bottom:16px}
+.dbg-prompt-label{font-size:.68rem;font-weight:700;color:var(--ink2);margin-bottom:4px}
+.dbg-prompt-text{font-size:.78rem;color:var(--ink);font-style:italic;line-height:1.5}
+.dbg-actions{display:flex;gap:9px;justify-content:flex-end}
+.dbg-btn-cancel{padding:10px 18px;background:var(--white);color:var(--ink2);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.dbg-btn-cancel:hover{border-color:var(--rose);color:var(--rose)}
+.dbg-btn-ok{padding:10px 22px;background:var(--rose);color:#fff;border:none;border-radius:var(--rsm);font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:background .2s}
+.dbg-btn-ok:hover{background:var(--rose-h)}
+@media(max-width:600px){.dbg-grid{grid-template-columns:1fr 1fr}.dbg-box{padding:16px}}
+
 footer{background:var(--ink);color:rgba(255,255,255,.3);text-align:center;padding:20px;font-size:.68rem;letter-spacing:.04em}
 footer span{color:rgba(255,255,255,.55)}
 @media(max-width:600px){
@@ -393,38 +418,49 @@ window.doGenerate = async () => {
     const b = state.bawahan;
     const h = state.height;
 
-    // Step 1: Resize foto customer
+    // ── STEP 1: Resize foto customer ──
     setLoadingSub('Memproses foto kamu...');
     const customerResized = await resizeImage(state.photoDataUrl, 1024);
 
-    // Step 2: Load foto produk atasan
+    // ── STEP 2: Load foto produk atasan — WAJIB berhasil ──
     setLoadingSub('Memuat foto produk atasan...');
     let atasanDataUrl = null;
-    if (a.foto_url) {
-      try {
-        atasanDataUrl = await urlToBase64(a.foto_url);
-        atasanDataUrl = await resizeImage(atasanDataUrl, 768);
-      } catch(e) {
-        console.warn('Gagal load foto atasan:', e.message);
-      }
+    if (!a.foto_url) {
+      throw new Error('Produk atasan tidak memiliki foto. Silakan update foto produk di halaman Admin.');
+    }
+    try {
+      atasanDataUrl = await urlToBase64(a.foto_url);
+      atasanDataUrl = await resizeImage(atasanDataUrl, 768);
+    } catch(e) {
+      throw new Error(`Gagal load foto atasan "${a.nama}". Kemungkinan URL foto tidak bisa diakses (CORS). Detail: ${e.message}`);
     }
 
-    // Step 3: Load foto produk bawahan
+    // ── STEP 3: Load foto produk bawahan — WAJIB berhasil jika bawahan dipilih ──
     let bawahanDataUrl = null;
-    if (b && b.foto_url) {
+    if (b) {
+      if (!b.foto_url) {
+        throw new Error('Produk bawahan tidak memiliki foto. Silakan update foto produk di halaman Admin.');
+      }
       setLoadingSub('Memuat foto produk bawahan...');
       try {
         bawahanDataUrl = await urlToBase64(b.foto_url);
         bawahanDataUrl = await resizeImage(bawahanDataUrl, 768);
       } catch(e) {
-        console.warn('Gagal load foto bawahan:', e.message);
+        throw new Error(`Gagal load foto bawahan "${b.nama}". Kemungkinan URL foto tidak bisa diakses (CORS). Detail: ${e.message}`);
       }
     }
 
-    // Step 4: Bangun prompt — FOKUS HANYA GANTI BAJU
+    // ── STEP 4: Tampilkan panel debug — konfirmasi foto sebelum kirim ──
+    const lanjut = await showDebugPanel(customerResized, atasanDataUrl, bawahanDataUrl, a, b);
+    if (!lanjut) {
+      showLoading(false);
+      return;
+    }
+
+    // ── STEP 5: Bangun prompt ──
     const prompt = buildPrompt(a, b, h);
 
-    // Step 5: Bangun FormData
+    // ── STEP 6: Bangun FormData ──
     setLoadingSub('Mengirim ke AI... mohon tunggu ~30-60 detik');
     const formData = new FormData();
     formData.append('model', 'gpt-image-1');
@@ -433,20 +469,17 @@ window.doGenerate = async () => {
     formData.append('quality', 'medium');
     formData.append('n', '1');
 
-    // image[0] = foto customer
-    formData.append('image[]', dataUrlToBlob(customerResized), 'customer.jpg');
-
-    // image[1] = foto produk atasan (jika berhasil load)
-    if (atasanDataUrl) {
-      formData.append('image[]', dataUrlToBlob(atasanDataUrl), 'atasan.jpg');
-    }
-
-    // image[2] = foto produk bawahan (jika ada)
+    // Foto 1 = customer (wajib)
+    formData.append('image[]', dataUrlToBlob(customerResized), 'foto1_customer.jpg');
+    // Foto 2 = atasan (wajib)
+    formData.append('image[]', dataUrlToBlob(atasanDataUrl), 'foto2_atasan.jpg');
+    // Foto 3 = bawahan (jika ada)
     if (bawahanDataUrl) {
-      formData.append('image[]', dataUrlToBlob(bawahanDataUrl), 'bawahan.jpg');
+      formData.append('image[]', dataUrlToBlob(bawahanDataUrl), 'foto3_bawahan.jpg');
     }
 
-    // Step 6: Kirim ke OpenAI /v1/images/edits
+    // ── STEP 7: Kirim ke OpenAI ──
+    showLoading(true);
     const res = await fetch('https://api.openai.com/v1/images/edits', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}` },
@@ -463,7 +496,7 @@ window.doGenerate = async () => {
       throw new Error(data?.error?.message || 'Gagal generate. Coba lagi.');
     }
 
-    // Step 7: Tampilkan hasil
+    // ── STEP 8: Tampilkan hasil ──
     const b64 = data.data[0].b64_json;
     const imgDataUrl = `data:image/png;base64,${b64}`;
 
@@ -474,7 +507,6 @@ window.doGenerate = async () => {
       if (b) sub += ` + ${b.nama}`;
       document.getElementById('resSub').textContent = sub;
 
-      // Buat blob URL untuk download
       const byteStr = atob(b64);
       const ab = new ArrayBuffer(byteStr.length);
       const ia = new Uint8Array(ab);
@@ -498,42 +530,81 @@ window.doGenerate = async () => {
   }
 };
 
+// ── PANEL DEBUG: tampilkan preview foto sebelum dikirim ke AI ──
+// User bisa konfirmasi atau batalkan
+function showDebugPanel(customerUrl, atasanUrl, bawahanUrl, a, b) {
+  return new Promise(resolve => {
+    // Hapus panel lama jika ada
+    const old = document.getElementById('debugPanel');
+    if (old) old.remove();
+
+    const bawahanHtml = bawahanUrl
+      ? `<div class="dbg-item">
+          <div class="dbg-label">📸 Foto 3 — Bawahan</div>
+          <img class="dbg-img" src="${bawahanUrl}" alt="bawahan"/>
+          <div class="dbg-name">${b?.nama || '—'}</div>
+          <div class="dbg-status ok">✅ Berhasil dimuat</div>
+        </div>`
+      : `<div class="dbg-item">
+          <div class="dbg-label">📸 Foto 3 — Bawahan</div>
+          <div class="dbg-empty">—</div>
+          <div class="dbg-status skip">⏭ Tidak ada bawahan</div>
+        </div>`;
+
+    const panel = document.createElement('div');
+    panel.id = 'debugPanel';
+    panel.innerHTML = `
+      <div class="dbg-overlay">
+        <div class="dbg-box">
+          <div class="dbg-title">🔍 Konfirmasi Foto yang Akan Dikirim ke AI</div>
+          <div class="dbg-subtitle">Pastikan semua foto sudah benar sebelum lanjut generate</div>
+          <div class="dbg-grid">
+            <div class="dbg-item">
+              <div class="dbg-label">📸 Foto 1 — Customer</div>
+              <img class="dbg-img" src="${customerUrl}" alt="customer"/>
+              <div class="dbg-name">Foto kamu</div>
+              <div class="dbg-status ok">✅ Berhasil dimuat</div>
+            </div>
+            <div class="dbg-item">
+              <div class="dbg-label">📸 Foto 2 — Atasan</div>
+              <img class="dbg-img" src="${atasanUrl}" alt="atasan"/>
+              <div class="dbg-name">${a?.nama || '—'}</div>
+              <div class="dbg-status ok">✅ Berhasil dimuat</div>
+            </div>
+            ${bawahanHtml}
+          </div>
+          <div class="dbg-prompt">
+            <div class="dbg-prompt-label">📝 Prompt yang dikirim:</div>
+            <div class="dbg-prompt-text" id="dbgPromptText"></div>
+          </div>
+          <div class="dbg-actions">
+            <button class="dbg-btn-cancel" onclick="document.getElementById('debugPanel').resolve(false)">✕ Batal</button>
+            <button class="dbg-btn-ok" onclick="document.getElementById('debugPanel').resolve(true)">✨ Lanjut Generate</button>
+          </div>
+        </div>
+      </div>`;
+
+    // Simpan resolve ke elemen agar bisa dipanggil dari onclick
+    panel.resolve = resolve;
+    document.body.appendChild(panel);
+
+    // Isi prompt text
+    document.getElementById('dbgPromptText').textContent = b
+      ? 'ganti baju wanita pada foto pertama dengan baju pada foto kedua dan celana pada foto ke tiga, pertahankan wajah wanita pada foto pertama'
+      : 'ganti baju wanita pada foto pertama dengan baju pada foto kedua, pertahankan wajah wanita pada foto pertama';
+  });
+}
+
 // ── PROMPT — fokus HANYA ganti baju, semua lain dipertahankan ──
 function buildPrompt(a, b, h) {
-  let clothingDesc = '';
-
-  if (a.kategori === 'Gamis') {
-    clothingDesc = `Replace the clothing in the first image with the gamis shown in the second reference image.
-Gamis description: ${a.deskripsi_ai}. Length: ${a.panjang_baju}cm (full length to near ankles for a ${h}cm person).`;
-
-  } else if (a.kategori === 'One Set') {
-    clothingDesc = `Replace the clothing in the first image with the one-set outfit shown in the second reference image.
-Outfit description: ${a.deskripsi_ai}. Total length: ${a.panjang_baju}cm.`;
-
+  // Prompt singkat dan natural — mengikuti gaya yang terbukti efektif di ChatGPT
+  if (a.kategori === 'Gamis' || a.kategori === 'One Set') {
+    return `ganti baju wanita pada foto pertama dengan baju pada foto kedua, pertahankan wajah wanita pada foto pertama`;
+  } else if (b) {
+    return `ganti baju wanita pada foto pertama dengan baju pada foto kedua dan celana pada foto ke tiga, pertahankan wajah wanita pada foto pertama`;
   } else {
-    clothingDesc = `Replace the top/shirt in the first image with the top shown in the second reference image.
-Top description: ${a.deskripsi_ai}. Top length: ${a.panjang_baju}cm.`;
-    if (b) {
-      clothingDesc += `\nReplace the bottom/pants in the first image with the bottom shown in the third reference image.
-Bottom description: ${b.deskripsi_ai}. Bottom length: ${b.panjang_baju}cm.`;
-    }
+    return `ganti baju wanita pada foto pertama dengan baju pada foto kedua, pertahankan wajah wanita pada foto pertama`;
   }
-
-  return `You are a virtual try-on AI. Your ONLY task is to replace the clothing on the person.
-
-${clothingDesc}
-
-STRICT RULES — do NOT change any of these:
-- Face: keep 100% identical — same features, expression, skin tone
-- Hijab: keep exactly the same color, style, and draping
-- Body pose and position: keep exactly the same
-- Background: keep EXACTLY as in the original photo — do NOT change or replace it
-- Lighting and shadows: keep consistent with the original photo
-- Body proportions: keep natural for a ${h}cm tall person
-
-ONLY change: the clothing items as described above.
-Match the clothing color, pattern, fabric texture, and style as closely as possible to the reference product images.
-The result must look like a realistic, natural photo — not illustrated or AI-generated looking.`;
 }
 
 // ── FIREBASE ──
