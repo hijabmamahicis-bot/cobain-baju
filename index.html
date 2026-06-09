@@ -416,7 +416,7 @@ window.doGenerate = async () => {
     const prompt = buildPrompt();
 
     const res = await fetch(
-      'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-dev',
+      'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1',
       {
         method: 'POST',
         headers: {
@@ -700,19 +700,29 @@ window.clearSearch = () => {
 
 // ── VALIDATION ──
 function updateVal(n, ok) {
-  const vr=document.getElementById(`v${n}`);
-  const vd=document.getElementById(`vd${n}`);
-  if(!vr||!vd) return;
-  vr.className = ok ? 'vr ok' : 'vr';
-  vd.className = ok ? 'vdot ok' : 'vdot';
+  const vr = document.getElementById('v'+n);
+  const vd = document.getElementById('vd'+n);
+  if (!vr || !vd) return;
   const labels = ['','Atasan dipilih','Foto diupload','Tinggi badan','Bawahan dipilih','Suasana dipilih'];
-  vr.innerHTML = `<div class="vdot ${ok?'ok':''}"></div>${labels[n]}`;
+  vr.className = ok ? 'vr ok' : 'vr';
+  const dot = vr.querySelector('.vdot');
+  if (dot) dot.className = ok ? 'vdot ok' : 'vdot';
+}
+
+function refreshAllVal() {
+  updateVal(1, !!state.atasan);
+  updateVal(2, !!state.photoDataUrl);
+  updateVal(3, !!state.height);
+  const bawahanOk = NO_BAWAHAN.includes(state.atasanKat) || !!state.bawahan;
+  updateVal(4, bawahanOk);
+  updateVal(5, !!state.suasana);
 }
 
 function updateBtn() {
   const bawahanOk = NO_BAWAHAN.includes(state.atasanKat) || !!state.bawahan;
   const allOk = !!state.atasan && !!state.photoDataUrl && !!state.height && bawahanOk && !!state.suasana;
   document.getElementById('genBtn').disabled = !allOk;
+  refreshAllVal();
 }
 
 // ── BUILD PROMPT ──
