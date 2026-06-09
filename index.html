@@ -578,20 +578,28 @@ function showDebugPanel(customerUrl, atasanUrl, bawahanUrl, a, b) {
             <div class="dbg-prompt-text" id="dbgPromptText"></div>
           </div>
           <div class="dbg-actions">
-            <button class="dbg-btn-cancel" onclick="document.getElementById('debugPanel').resolve(false)">✕ Batal</button>
-            <button class="dbg-btn-ok" onclick="document.getElementById('debugPanel').resolve(true)">✨ Lanjut Generate</button>
+            <button class="dbg-btn-cancel" id="dbgBtnCancel">✕ Batal</button>
+            <button class="dbg-btn-ok" id="dbgBtnOk">✨ Lanjut Generate</button>
           </div>
         </div>
       </div>`;
 
-    // Simpan resolve ke elemen agar bisa dipanggil dari onclick
-    panel.resolve = resolve;
     document.body.appendChild(panel);
 
     // Isi prompt text
     document.getElementById('dbgPromptText').textContent = b
       ? 'ganti baju wanita pada foto pertama dengan baju pada foto kedua dan celana pada foto ke tiga, pertahankan wajah wanita pada foto pertama'
       : 'ganti baju wanita pada foto pertama dengan baju pada foto kedua, pertahankan wajah wanita pada foto pertama';
+
+    // Pasang event listener langsung ke tombol
+    document.getElementById('dbgBtnOk').addEventListener('click', () => {
+      panel.remove();
+      resolve(true);
+    });
+    document.getElementById('dbgBtnCancel').addEventListener('click', () => {
+      panel.remove();
+      resolve(false);
+    });
   });
 }
 
