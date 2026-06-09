@@ -398,6 +398,7 @@ const firebaseConfig = {
 };
 
 const HF_KEY_STORAGE = 'hmi_hf_key';
+const NO_BAWAHAN = ['Gamis', 'One Set'];
 
 // ── GENERATE ──
 window.doGenerate = async () => {
@@ -722,7 +723,7 @@ function updateVal(n, ok) {
 
 function updateBtn() {
   const bawahanOk = NO_BAWAHAN.includes(state.atasanKat) || !!state.bawahan;
-  const allOk = state.atasan && state.photoDataUrl && state.height && bawahanOk && state.suasana;
+  const allOk = !!state.atasan && !!state.photoDataUrl && !!state.height && bawahanOk && !!state.suasana;
   document.getElementById('genBtn').disabled = !allOk;
 }
 
