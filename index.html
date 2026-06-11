@@ -1003,11 +1003,9 @@ window.doGenerate = async () => {
       }
     }
 
-    // If no image in response, GPT-4o might not support image generation yet
-    // Fall back to DALL-E 3 with enhanced prompt
+    // If no image in response, use gpt-image-1 for image generation
     if (!imgUrl) {
-      state.aiSource = 'dalle'; // fallback to DALL-E
-      // Build text description for DALL-E fallback
+      state.aiSource = 'dalle';
       const h = state.height;
       let outfitDesc = '';
       if (isGamisOrOneSet) {
@@ -1021,11 +1019,13 @@ window.doGenerate = async () => {
       const dalleRes = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({ model: 'dall-e-3', prompt: fallbackPrompt, n: 1, size: '1024x1792', quality: 'hd' })
+        body: JSON.stringify({ model: 'gpt-image-1', prompt: fallbackPrompt, n: 1, size: '1024x1536', quality: 'medium' })
       });
       const dalleData = await dalleRes.json();
       if (!dalleRes.ok) throw new Error(dalleData?.error?.message || 'Gagal generate');
-      imgUrl = dalleData.data[0].url;
+      // gpt-image-1 returns base64
+      const b64 = dalleData.data[0].b64_json;
+      imgUrl = `data:image/png;base64,${b64}`;
     }
 
     state.resultUrl = imgUrl;
