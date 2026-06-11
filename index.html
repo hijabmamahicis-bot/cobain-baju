@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v2.5 - image[] fix -->
+<!-- v3.0 - optimized OpenAI image edit flow -->
 <html lang="id">
 <head>
 <meta charset="UTF-8"/>
@@ -182,7 +182,8 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px
 }
 .ai-source-badge.gpt4o{background:#e8f4fd;color:#1a6fa8}
 .ai-source-badge.dalle{background:#fef3e2;color:#d4860a}
-.ai-source-badge:empty{display:none}display:inline-flex;align-items:center;gap:5px;background:var(--green-s);color:var(--green);font-size:.7rem;font-weight:700;padding:3px 11px;border-radius:100px;margin-bottom:12px}
+.ai-source-badge:empty{display:none}
+.res-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-s);color:var(--green);font-size:.7rem;font-weight:700;padding:3px 11px;border-radius:100px;margin-bottom:12px}
 .res-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:5px}
 .res-sub{font-size:.78rem;color:var(--ink2);margin-bottom:20px;line-height:1.5}
 .res-img{width:100%;max-width:320px;border-radius:var(--radius);border:1px solid var(--border);display:block;margin:0 auto 20px}
@@ -370,14 +371,14 @@ footer span{color:rgba(255,255,255,.55)}
         <input type="file" id="fotoInput" accept="image/jpeg,image/png,image/webp"/>
         <div class="upload-ico">🧍‍♀️</div>
         <div class="upload-lbl">Klik atau seret foto di sini</div>
-        <div class="upload-hint">JPG · PNG · Maks 5MB · Foto tidak dikirim ke server</div>
+        <div class="upload-hint">JPG · PNG · Maks 5MB · Foto hanya digunakan untuk proses AI</div>
       </div>
       <div class="photo-prev" id="photoPrev">
         <div class="prev-thumb" id="prevThumb"><img id="prevImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px"/></div>
         <div class="prev-meta">
           <div class="prev-name" id="prevName">—</div>
           <div class="prev-size" id="prevSize">—</div>
-          <div class="prev-priv">🔒 Tidak disimpan ke server</div>
+          <div class="prev-priv">🔒 Hanya digunakan untuk proses AI</div>
         </div>
         <button class="btn-rm" onclick="removePhoto()">✕</button>
       </div>
@@ -447,7 +448,7 @@ footer span{color:rgba(255,255,255,.55)}
   <!-- GENERATE -->
   <div class="gen-btn-wrap">
     <button class="gen-btn" id="genBtn" disabled onclick="doGenerate()">✨ Cobain Sekarang!</button>
-    <div class="gen-note">🔒 Foto diproses langsung oleh AI · Tidak disimpan di manapun</div>
+    <div class="gen-note">🔒 Foto hanya digunakan untuk proses AI · Tidak disimpan di database kami</div>
   </div>
   <div class="err-msg" id="errMsg"></div>
 
@@ -471,7 +472,7 @@ footer span{color:rgba(255,255,255,.55)}
 </div>
 
 <footer>
-  <span>Hijab Mamah Icis</span> &nbsp;·&nbsp; Spesialis Pakaian Kerja Sehari-hari &nbsp;·&nbsp; Foto tidak disimpan
+  <span>Hijab Mamah Icis</span> &nbsp;·&nbsp; Spesialis Pakaian Kerja Sehari-hari &nbsp;·&nbsp; Foto tidak disimpan di database kami
 </footer>
 
 <script type="module">
@@ -490,71 +491,11 @@ const firebaseConfig = {
 const OPENAI_KEY_STORAGE = 'hmi_oai_key';
 const NO_BAWAHAN = ['Gamis', 'One Set'];
 
-// ── GENERATE ──
-window.doGenerate = async () => {
-  let apiKey = localStorage.getItem(OPENAI_KEY_STORAGE)||'';
-  if (!apiKey || !apiKey.startsWith('sk-')) {
-    apiKey = prompt('Masukkan OpenAI API Key kamu:\n(dimulai dengan sk-...)');
-    if (!apiKey || !apiKey.startsWith('sk-')) { showErr('API Key tidak valid. Harus dimulai dengan sk-'); return; }
-    localStorage.setItem(OPENAI_KEY_STORAGE, apiKey);
-  }
-
-  hideErr();
-  showLoading(true);
-
-  try {
-    const prompt = buildPrompt();
-    const res = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'dall-e-3',
-        prompt: prompt,
-        n: 1,
-        size: '1024x1792',
-        quality: 'standard'
-      })
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      if (res.status === 401) {
-        localStorage.removeItem(OPENAI_KEY_STORAGE);
-        throw new Error('API Key tidak valid. Masukkan key yang benar.');
-      }
-      throw new Error(data?.error?.message || 'Gagal generate gambar');
-    }
-
-    const imgUrl = data.data[0].url;
-    state.resultUrl = imgUrl;
-
-    const resImg = document.getElementById('resImg');
-    resImg.src = imgUrl;
-    resImg.onload = () => {
-      const a = state.atasan;
-      const b = state.bawahan;
-      let sub = `${a.nama}`;
-      if (b) sub += ` + ${b.nama}`;
-      document.getElementById('resSub').textContent = sub;
-
-      let actions = `<a class="btn-dl" href="${imgUrl}" download="hijabmamahicis-tryon.png" target="_blank">⬇ Download Foto</a>`;
-      if (a.link_shopee) actions += `<a class="btn-shopee" href="${a.link_shopee}" target="_blank">🛒 Beli Atasan</a>`;
-      if (b?.link_shopee) actions += `<a class="btn-shopee" href="${b.link_shopee}" target="_blank">🛒 Beli Bawahan</a>`;
-      actions += `<button class="btn-again" onclick="resetAll()">↺ Coba Lagi</button>`;
-      document.getElementById('resActions').innerHTML = actions;
-
-      document.getElementById('resultSec').classList.add('show');
-      document.getElementById('resultSec').scrollIntoView({behavior:'smooth',block:'start'});
-    };
-  } catch(e) {
-    showErr('❌ '+e.message);
-  } finally {
-    showLoading(false);
-  }
-};
+// ── OPENAI SETTINGS ──
+const IMAGE_MODEL_PRIMARY = 'gpt-image-1.5';
+const IMAGE_MODEL_FALLBACK = 'gpt-image-1';
+const IMAGE_SIZE = '1024x1536';
+const IMAGE_QUALITY = 'high';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -785,12 +726,25 @@ function updateBtn() {
 }
 
 // ── BUILD PROMPT ──
+function productDescription(p) {
+  if (!p) return '';
+  const parts = [];
+  if (p.nama) parts.push(`Nama produk: ${p.nama}`);
+  if (p.kategori) parts.push(`Kategori: ${p.kategori}`);
+  if (p.deskripsi_ai) parts.push(`Deskripsi produk: ${p.deskripsi_ai}`);
+  if (p.warna) parts.push(`Warna: ${p.warna}`);
+  if (p.bahan) parts.push(`Bahan: ${p.bahan}`);
+  if (p.panjang_baju) parts.push(`Panjang produk: ${p.panjang_baju} cm`);
+  if (Array.isArray(p.size) && p.size.length) parts.push(`Size tersedia: ${p.size.join(', ')}`);
+  return parts.join('\n');
+}
+
 function buildPromptGamis() {
   return `Virtual try-on clothing edit. This is an image editing task, not a new image generation task.
 
 IMAGE ROLES:
 - Image 1 is the base customer photo and must be preserved.
-- Image 2 is the outfit reference.
+- Image 2 is only the outfit reference.
 
 TASK:
 Edit Image 1 by replacing only the clothing worn by the woman.
@@ -814,7 +768,10 @@ OUTFIT REQUIREMENTS FROM IMAGE 2:
 - match the garment in Image 2 as closely as possible
 - preserve the same color, silhouette, neckline/collar, sleeve shape, cuff style, overall length, motif, and embroidery placement
 - preserve the visible design details clearly and accurately
-- keep the fit natural and realistic
+- keep the fabric appearance, modest fit, and drape natural on the body from Image 1
+
+OUTFIT PRODUCT DESCRIPTION:
+${productDescription(state.atasan)}
 
 IMPORTANT RULES:
 - do not create a new person
@@ -823,13 +780,15 @@ IMPORTANT RULES:
 - do not change the hijab
 - do not change the pose
 - do not change the body size
+- do not slim or enlarge the body
 - do not change the background
 - do not change the scene
+- do not change the framing
 - replace only the outfit
-- the final result must look like the original Image 1 photo with only the outfit replaced
+- the final result must look like the original Image 1 photo with only the clothing replaced
 
 OUTPUT GOAL:
-A photorealistic virtual try-on result where the woman remains clearly recognizable as the same person in Image 1, while wearing the outfit from Image 2.`;
+A photorealistic virtual try-on result where the woman remains clearly recognizable as the same person in Image 1, while wearing the actual outfit from Image 2.`;
 }
 
 function buildPromptAtasan() {
@@ -838,7 +797,7 @@ function buildPromptAtasan() {
 IMAGE ROLES:
 - Image 1 is the base customer photo and must be preserved.
 - Image 2 is only the reference for the top garment.
-- Image 3 is only the reference for the pants/bottom garment.
+- Image 3 is only the reference for the pants or bottom garment.
 
 TASK:
 Edit Image 1 by replacing only the clothing worn by the woman.
@@ -861,13 +820,19 @@ ABSOLUTELY PRESERVE FROM IMAGE 1:
 TOP GARMENT REQUIREMENTS FROM IMAGE 2:
 - match the garment in Image 2 as closely as possible
 - preserve the same color, silhouette, collar shape, front placket/button area, sleeve shape, cuff style, garment length, and embroidery placement
-- preserve the embroidery details clearly and accurately
-- keep the fabric appearance and overall modest fit natural
+- preserve embroidery and motif details clearly and accurately, especially around hem, sleeve, chest, or any visible design area
+- keep the fabric appearance and modest fit natural on the body from Image 1
+
+TOP PRODUCT DESCRIPTION:
+${productDescription(state.atasan)}
 
 BOTTOM GARMENT REQUIREMENTS FROM IMAGE 3:
 - match the bottom garment in Image 3 as closely as possible
 - preserve the same color, waistband style, silhouette, length, and overall shape
 - keep the fit natural on the body from Image 1
+
+BOTTOM PRODUCT DESCRIPTION:
+${productDescription(state.bawahan)}
 
 IMPORTANT RULES:
 - do not create a new person
@@ -887,26 +852,132 @@ OUTPUT GOAL:
 A photorealistic virtual try-on result where the woman remains clearly recognizable as the same person in Image 1, while wearing the actual outfit from Image 2 and Image 3.`;
 }
 
-// Convert image URL to base64
-async function urlToBase64(url) {
-  const res = await fetch(url);
-  const blob = await res.blob();
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result.split(',')[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
+function buildPromptAtasanOnly() {
+  return `Virtual try-on clothing edit. This is an image editing task, not a new image generation task.
+
+IMAGE ROLES:
+- Image 1 is the base customer photo and must be preserved.
+- Image 2 is only the reference for the top garment.
+
+TASK:
+Edit Image 1 by replacing only the top clothing worn by the woman.
+Use the top garment from Image 2.
+
+ABSOLUTELY PRESERVE FROM IMAGE 1:
+- the exact same woman
+- the exact same face identity
+- the exact same facial expression
+- the exact same hijab color, shape, folds, and drape
+- the exact same pose
+- the exact same hand positions
+- the exact same body shape and proportions
+- the exact same skin tone
+- the exact same existing bottom/pants/skirt
+- the exact same shoes
+- the exact same background
+- the exact same camera angle and framing
+- the exact same lighting and shadows
+
+TOP GARMENT REQUIREMENTS FROM IMAGE 2:
+- match the garment in Image 2 as closely as possible
+- preserve the same color, silhouette, collar shape, front placket/button area, sleeve shape, cuff style, garment length, and embroidery placement
+- preserve embroidery and motif details clearly and accurately
+- keep the fabric appearance and modest fit natural
+
+TOP PRODUCT DESCRIPTION:
+${productDescription(state.atasan)}
+
+IMPORTANT RULES:
+- do not create a new person
+- do not redraw the face
+- do not beautify the face
+- do not change the hijab
+- do not change the pose
+- do not change the body size
+- do not slim or enlarge the body
+- do not change the background
+- do not change the scene
+- do not change the framing
+- replace only the top clothing
+- the final result must look like the original Image 1 photo with only the top replaced
+
+OUTPUT GOAL:
+A photorealistic virtual try-on result where the woman remains clearly recognizable as the same person in Image 1, while wearing the actual top garment from Image 2.`;
+}
+
+// Convert an image source to a high-quality PNG File.
+// Works for uploaded data URLs and CORS-enabled product URLs.
+async function toBlobPng(src, fileName = 'image.png', maxSize = 1536) {
+  const img = await new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Gagal membaca gambar: ${fileName}`));
+    image.src = src;
   });
+
+  const naturalW = img.naturalWidth || img.width;
+  const naturalH = img.naturalHeight || img.height;
+  if (!naturalW || !naturalH) throw new Error(`Ukuran gambar tidak valid: ${fileName}`);
+
+  const ratio = Math.min(1, maxSize / Math.max(naturalW, naturalH));
+  const w = Math.round(naturalW * ratio);
+  const h = Math.round(naturalH * ratio);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, w, h);
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) throw new Error(`Gagal memproses gambar menjadi PNG: ${fileName}. Cek CORS/akses gambar produk.`);
+  return new File([blob], fileName, { type: 'image/png' });
 }
 
-// Convert dataUrl to base64 only
-function dataUrlToBase64(dataUrl) {
-  return dataUrl.split(',')[1];
+function createImageEditFormData(model, prompt, files) {
+  const formData = new FormData();
+  formData.append('model', model);
+  formData.append('prompt', prompt);
+  formData.append('n', '1');
+  formData.append('size', IMAGE_SIZE);
+  formData.append('quality', IMAGE_QUALITY);
+  files.forEach(file => formData.append('image[]', file));
+  return formData;
 }
 
+function shouldFallbackModel(status, data) {
+  const msg = String(data?.error?.message || '').toLowerCase();
+  return status === 400 && (
+    msg.includes('model') ||
+    msg.includes('does not exist') ||
+    msg.includes('not found') ||
+    msg.includes('not available') ||
+    msg.includes('unsupported') ||
+    msg.includes('organization verification') ||
+    msg.includes('access')
+  );
+}
+
+async function sendImageEditRequest(apiKey, model, prompt, files) {
+  const res = await fetch('https://api.openai.com/v1/images/edits', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}` },
+    body: createImageEditFormData(model, prompt, files)
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data?.error?.message || `Error ${res.status}`);
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
+
+// ── GENERATE ──
 window.doGenerate = async () => {
   let apiKey = localStorage.getItem(OPENAI_KEY_STORAGE)||'';
   if (!apiKey || !apiKey.startsWith('sk-')) {
@@ -921,87 +992,64 @@ window.doGenerate = async () => {
   try {
     const a = state.atasan;
     const b = state.bawahan;
+    if (!a) throw new Error('Pilih atasan terlebih dahulu.');
+    if (!state.photoDataUrl) throw new Error('Upload foto customer terlebih dahulu.');
+    if (!a.foto_url) throw new Error(`Produk atasan "${a.nama}" belum memiliki foto_url.`);
+
     const isGamisOrOneSet = NO_BAWAHAN.includes(a.kategori);
+    if (!isGamisOrOneSet && !b) throw new Error('Pilih bawahan terlebih dahulu.');
+    if (!isGamisOrOneSet && b && !b.foto_url) throw new Error(`Produk bawahan "${b.nama}" belum memiliki foto_url.`);
 
-    // Build prompt
-    const prompt = isGamisOrOneSet ? buildPromptGamis() : buildPromptAtasan();
+    // Build prompt — keep it close to the successful ChatGPT direct-edit behavior.
+    const prompt = isGamisOrOneSet ? buildPromptGamis() : (b ? buildPromptAtasan() : buildPromptAtasanOnly());
 
-    // Helper: convert dataUrl to PNG blob
-    async function toBlobPng(src) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          canvas.getContext('2d').drawImage(img, 0, 0);
-          canvas.toBlob(resolve, 'image/png');
-        };
-        img.src = src;
-      });
-    }
-
-    // Convert all images to PNG blobs
-    const customerBlob = await toBlobPng(state.photoDataUrl);
-    const atasanBlob   = await toBlobPng(a.foto_url);
-
-    // Build FormData — gpt-image-1 edits accepts 'image' (single) or array
-    const formData = new FormData();
-    formData.append('model', 'gpt-image-1');
-    formData.append('prompt', prompt);
-    formData.append('n', '1');
-    formData.append('size', '1024x1536');
-    formData.append('quality', 'high');
-    formData.append('image[]', new File([customerBlob], 'customer.png', {type:'image/png'}));
-    formData.append('image[]', new File([atasanBlob],   'atasan.png',   {type:'image/png'}));
-
+    // Prepare image references in the exact order used in the prompt.
+    const files = [];
+    files.push(await toBlobPng(state.photoDataUrl, 'image1_customer.png', 1536));
+    files.push(await toBlobPng(a.foto_url, 'image2_top_reference.png', 1536));
     if (!isGamisOrOneSet && b?.foto_url) {
-      const bawahanBlob = await toBlobPng(b.foto_url);
-      formData.append('image[]', new File([bawahanBlob], 'bawahan.png', {type:'image/png'}));
+      files.push(await toBlobPng(b.foto_url, 'image3_bottom_reference.png', 1536));
     }
 
-    const res = await fetch('https://api.openai.com/v1/images/edits', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey}` },
-      body: formData
-    });
+    console.log('Virtual try-on prompt:', prompt);
+    console.table(files.map((file, i) => ({ index: i + 1, name: file.name, type: file.type, size_kb: Math.round(file.size / 1024) })));
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        localStorage.removeItem(OPENAI_KEY_STORAGE);
-        throw new Error('API Key tidak valid.');
+    let usedModel = IMAGE_MODEL_PRIMARY;
+    let data;
+    try {
+      data = await sendImageEditRequest(apiKey, IMAGE_MODEL_PRIMARY, prompt, files);
+    } catch (err) {
+      if (shouldFallbackModel(err.status, err.data)) {
+        console.warn(`${IMAGE_MODEL_PRIMARY} tidak bisa dipakai untuk akun/API key ini. Fallback ke ${IMAGE_MODEL_FALLBACK}.`, err.data?.error?.message || err.message);
+        usedModel = IMAGE_MODEL_FALLBACK;
+        data = await sendImageEditRequest(apiKey, IMAGE_MODEL_FALLBACK, prompt, files);
+      } else {
+        throw err;
       }
-      throw new Error(data?.error?.message || `Error ${res.status}`);
     }
 
-    // gpt-image-1 returns base64
-    const b64 = data.data[0].b64_json;
-    const imgUrl = `data:image/png;base64,${b64}`;
+    const first = data?.data?.[0];
+    if (!first) throw new Error('Respons AI kosong. Coba lagi.');
+    const imgUrl = first.b64_json ? `data:image/png;base64,${first.b64_json}` : first.url;
+    if (!imgUrl) throw new Error('Respons AI tidak berisi gambar.');
+
     state.resultUrl = imgUrl;
-    state.aiSource = 'gpt4o';
+    state.aiSource = usedModel;
 
     const resImg = document.getElementById('resImg');
     resImg.src = imgUrl;
     resImg.onload = () => {
-      // Show AI source badge
       const badge = document.getElementById('aiSourceBadge');
-      if (state.aiSource === 'gpt4o') {
-        badge.className = 'ai-source-badge gpt4o';
-        badge.textContent = '✨ Dihasilkan oleh GPT-4o (Image Editing)';
-      } else {
-        badge.className = 'ai-source-badge dalle';
-        badge.textContent = '🎨 Dihasilkan oleh DALL·E 3 (Image Generation)';
-      }
+      badge.className = 'ai-source-badge gpt4o';
+      badge.textContent = `✨ Dihasilkan oleh ${usedModel} (Image Editing)`;
+
       let sub = `${a.nama}`;
       if (b && !isGamisOrOneSet) sub += ` + ${b.nama}`;
       document.getElementById('resSub').textContent = sub;
 
       let actions = `<a class="btn-dl" href="${imgUrl}" download="hijabmamahicis-tryon.png" target="_blank">⬇ Download Foto</a>`;
       if (a.link_shopee) actions += `<a class="btn-shopee" href="${a.link_shopee}" target="_blank">🛒 Beli Atasan</a>`;
-      if (b?.link_shopee) actions += `<a class="btn-shopee" href="${b.link_shopee}" target="_blank">🛒 Beli Bawahan</a>`;
+      if (b?.link_shopee && !isGamisOrOneSet) actions += `<a class="btn-shopee" href="${b.link_shopee}" target="_blank">🛒 Beli Bawahan</a>`;
       actions += `<button class="btn-again" onclick="resetAll()">↺ Coba Lagi</button>`;
       document.getElementById('resActions').innerHTML = actions;
       document.getElementById('resultSec').classList.add('show');
@@ -1009,6 +1057,7 @@ window.doGenerate = async () => {
     };
 
   } catch(e) {
+    if (e.status === 401) localStorage.removeItem(OPENAI_KEY_STORAGE);
     showErr('❌ '+e.message);
   } finally {
     showLoading(false);
