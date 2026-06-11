@@ -922,56 +922,39 @@ window.doGenerate = async () => {
     const b = state.bawahan;
     const isGamisOrOneSet = NO_BAWAHAN.includes(a.kategori);
 
-    // Convert customer photo to base64
-    const customerBase64 = dataUrlToBase64(state.photoDataUrl);
-    const customerMime = state.photoDataUrl.split(';')[0].split(':')[1];
+    // Build prompt
+    const prompt = isGamisOrOneSet ? buildPromptGamis() : buildPromptAtasan();
 
-    // Convert product photos to base64
-    const atasanBase64 = await urlToBase64(a.foto_url);
+    // Convert customer photo to File object
+    const customerBlob = await fetch(state.photoDataUrl).then(r => r.blob());
+    const customerFile = new File([customerBlob], 'customer.png', { type: 'image/png' });
 
-    // Build messages array
-    const messages = [];
+    // Convert atasan photo to File object
+    const atasanBlob = await fetch(a.foto_url).then(r => r.blob());
+    const atasanFile = new File([atasanBlob], 'atasan.png', { type: 'image/png' });
 
-    if (isGamisOrOneSet) {
-      // Gamis / One Set — 2 images
-      messages.push({
-        role: 'user',
-        content: [
-          { type: 'text', text: buildPromptGamis() },
-          { type: 'text', text: 'Image 1 — Customer photo:' },
-          { type: 'image_url', image_url: { url: `data:${customerMime};base64,${customerBase64}`, detail: 'high' } },
-          { type: 'text', text: 'Image 2 — Outfit reference:' },
-          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${atasanBase64}`, detail: 'high' } },
-        ]
-      });
-    } else {
-      // Atasan + Bawahan — 3 images
-      const bawahanBase64 = await urlToBase64(b.foto_url);
-      messages.push({
-        role: 'user',
-        content: [
-          { type: 'text', text: buildPromptAtasan() },
-          { type: 'text', text: 'Image 1 — Customer photo:' },
-          { type: 'image_url', image_url: { url: `data:${customerMime};base64,${customerBase64}`, detail: 'high' } },
-          { type: 'text', text: 'Image 2 — Top garment reference:' },
-          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${atasanBase64}`, detail: 'high' } },
-          { type: 'text', text: 'Image 3 — Bottom garment reference:' },
-          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${bawahanBase64}`, detail: 'high' } },
-        ]
-      });
+    // Build FormData for gpt-image-1
+    const formData = new FormData();
+    formData.append('model', 'gpt-image-1');
+    formData.append('prompt', prompt);
+    formData.append('n', '1');
+    formData.append('size', '1024x1536');
+    formData.append('quality', 'medium');
+
+    // Append images
+    formData.append('image[]', customerFile, 'customer.png');
+    formData.append('image[]', atasanFile, 'atasan.png');
+
+    if (!isGamisOrOneSet && b?.foto_url) {
+      const bawahanBlob = await fetch(b.foto_url).then(r => r.blob());
+      const bawahanFile = new File([bawahanBlob], 'bawahan.png', { type: 'image/png' });
+      formData.append('image[]', bawahanFile, 'bawahan.png');
     }
 
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    const res = await fetch('https://api.openai.com/v1/images/edits', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: messages,
-        max_tokens: 4096
-      })
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+      body: formData
     });
 
     const data = await res.json();
@@ -984,52 +967,11 @@ window.doGenerate = async () => {
       throw new Error(data?.error?.message || `Error ${res.status}`);
     }
 
-    // Extract image from response
-    const content = data.choices[0]?.message?.content;
-    if (!content) throw new Error('Tidak ada hasil dari AI');
-
-    // Check if response contains image data
-    const imageData = data.choices[0]?.message?.content;
-
-    // GPT-4o returns image as base64 in content parts
-    let imgUrl = null;
-    const msgContent = data.choices[0]?.message?.content;
-
-    if (Array.isArray(msgContent)) {
-      const imgPart = msgContent.find(p => p.type === 'image_url');
-      if (imgPart) {
-        imgUrl = imgPart.image_url.url;
-        state.aiSource = 'gpt4o'; // GPT-4o berhasil generate gambar!
-      }
-    }
-
-    // If no image in response, use gpt-image-1 for image generation
-    if (!imgUrl) {
-      state.aiSource = 'dalle';
-      const h = state.height;
-      let outfitDesc = '';
-      if (isGamisOrOneSet) {
-        outfitDesc = `wearing ${a.deskripsi_ai}`;
-      } else {
-        outfitDesc = `wearing ${a.deskripsi_ai} paired with ${b.deskripsi_ai}`;
-      }
-
-      const fallbackPrompt = `Professional fashion photography. Indonesian Muslim woman, ${h}cm tall, ${outfitDesc}. Full body shot, modest fashion, hijab, professional lighting, photorealistic, natural background.`;
-
-      const dalleRes = await fetch('https://api.openai.com/v1/images/generations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({ model: 'gpt-image-1', prompt: fallbackPrompt, n: 1, size: '1024x1536', quality: 'medium' })
-      });
-      const dalleData = await dalleRes.json();
-      if (!dalleRes.ok) throw new Error(dalleData?.error?.message || 'Gagal generate');
-      // gpt-image-1 returns base64
-      const b64 = dalleData.data[0].b64_json;
-      imgUrl = `data:image/png;base64,${b64}`;
-    }
-
+    // gpt-image-1 returns base64
+    const b64 = data.data[0].b64_json;
+    const imgUrl = `data:image/png;base64,${b64}`;
     state.resultUrl = imgUrl;
-    state.aiSource = imgUrl ? 'gpt4o' : 'dalle'; // track source before fallback
+    state.aiSource = 'gpt4o';
 
     const resImg = document.getElementById('resImg');
     resImg.src = imgUrl;
