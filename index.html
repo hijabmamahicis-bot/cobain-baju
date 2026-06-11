@@ -952,12 +952,12 @@ window.doGenerate = async () => {
     formData.append('n', '1');
     formData.append('size', '1536x1536');
     formData.append('quality', 'high');
-    formData.append('image', new File([customerBlob], 'customer.png', {type:'image/png'}));
-    formData.append('image', new File([atasanBlob],   'atasan.png',   {type:'image/png'}));
+    formData.append('image[]', new File([customerBlob], 'customer.png', {type:'image/png'}));
+    formData.append('image[]', new File([atasanBlob],   'atasan.png',   {type:'image/png'}));
 
     if (!isGamisOrOneSet && b?.foto_url) {
       const bawahanBlob = await toBlobPng(b.foto_url);
-      formData.append('image', new File([bawahanBlob], 'bawahan.png', {type:'image/png'}));
+      formData.append('image[]', new File([bawahanBlob], 'bawahan.png', {type:'image/png'}));
     }
 
     const res = await fetch('https://api.openai.com/v1/images/edits', {
