@@ -925,30 +925,39 @@ window.doGenerate = async () => {
     // Build prompt
     const prompt = isGamisOrOneSet ? buildPromptGamis() : buildPromptAtasan();
 
-    // Convert customer photo to File object
-    const customerBlob = await fetch(state.photoDataUrl).then(r => r.blob());
-    const customerFile = new File([customerBlob], 'customer.png', { type: 'image/png' });
+    // Helper: convert dataUrl to PNG blob
+    async function toBlobPng(src) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          canvas.toBlob(resolve, 'image/png');
+        };
+        img.src = src;
+      });
+    }
 
-    // Convert atasan photo to File object
-    const atasanBlob = await fetch(a.foto_url).then(r => r.blob());
-    const atasanFile = new File([atasanBlob], 'atasan.png', { type: 'image/png' });
+    // Convert all images to PNG blobs
+    const customerBlob = await toBlobPng(state.photoDataUrl);
+    const atasanBlob   = await toBlobPng(a.foto_url);
 
-    // Build FormData for gpt-image-1
+    // Build FormData — gpt-image-1 edits accepts 'image' (single) or array
     const formData = new FormData();
     formData.append('model', 'gpt-image-1');
     formData.append('prompt', prompt);
     formData.append('n', '1');
     formData.append('size', '1024x1536');
     formData.append('quality', 'medium');
-
-    // Append images
-    formData.append('image[]', customerFile, 'customer.png');
-    formData.append('image[]', atasanFile, 'atasan.png');
+    formData.append('image', new File([customerBlob], 'customer.png', {type:'image/png'}));
+    formData.append('image', new File([atasanBlob],   'atasan.png',   {type:'image/png'}));
 
     if (!isGamisOrOneSet && b?.foto_url) {
-      const bawahanBlob = await fetch(b.foto_url).then(r => r.blob());
-      const bawahanFile = new File([bawahanBlob], 'bawahan.png', { type: 'image/png' });
-      formData.append('image[]', bawahanFile, 'bawahan.png');
+      const bawahanBlob = await toBlobPng(b.foto_url);
+      formData.append('image', new File([bawahanBlob], 'bawahan.png', {type:'image/png'}));
     }
 
     const res = await fetch('https://api.openai.com/v1/images/edits', {
