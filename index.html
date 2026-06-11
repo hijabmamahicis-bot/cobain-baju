@@ -951,7 +951,7 @@ window.doGenerate = async () => {
     formData.append('model', 'gpt-image-1');
     formData.append('prompt', prompt);
     formData.append('n', '1');
-    formData.append('size', '1536x1536');
+    formData.append('size', '1024x1536');
     formData.append('quality', 'high');
     formData.append('image[]', new File([customerBlob], 'customer.png', {type:'image/png'}));
     formData.append('image[]', new File([atasanBlob],   'atasan.png',   {type:'image/png'}));
